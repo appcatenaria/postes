@@ -21,26 +21,18 @@
         body, html {
             margin: 0;
             padding: 0;
-            height: 100%;
+            height: 100vh;
             width: 100%;
             overflow: hidden;
             background-color: #f0f2f5;
             overscroll-behavior: none; 
             font-family: sans-serif;
-        }
-        body {
-          overflow: hidden;
-          height: 100vh;
-          touch-action: none;
+            touch-action: none;
         }
         .main {
-      
         overflow: hidden;
         height: calc(100vh - 80px);
         }
-
-
-        
 
         .iframe-container {
             width: 100%;
@@ -102,6 +94,37 @@
             opacity: 0;
             pointer-events: none; /* Permite hacer clic a través de él una vez oculto */
         }
+        /* --- ESTILOS GENERALES (CSS) --- */
+      :root {
+        --primary-color: #6200EE; 
+        --bg-color: #f5f5f5;
+        --card-bg: #ffffff;
+        --text-color: #333;
+        --danger-color: #d32f2f;
+        --success-color: #00C853;
+        --warning-color: #FF9800;
+        --blue-color: #1976D2;
+      }
+
+      * { box-sizing: border-box; }
+      
+      /* BLOQUEAR EL SCROLL DE LA PAGINA ENTERA */
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden; /* IMPORTANTE: Quita el scroll general */
+        overscroll-behavior: none; /* IMPORTANTE: Quita el rebote */
+        position: fixed; /* IMPORTANTE: Fija la app */
+        font-family: 'Roboto', sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        -webkit-tap-highlight-color: transparent;
+        /* Evita selección de texto para parecer más nativa */
+        user-select: none; 
+        -webkit-user-select: none;
+      }
     </style>
 </head>
 <body>
