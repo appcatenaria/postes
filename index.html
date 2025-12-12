@@ -15,6 +15,7 @@
     <meta name="theme-color" content="#6200EE">
 
     <style>
+        /* Variables para Safe Areas */
         :root {
             --sat: env(safe-area-inset-top);
             --sar: env(safe-area-inset-right);
@@ -22,18 +23,21 @@
             --sal: env(safe-area-inset-left);
         }
 
+        /* Reset General */
         body, html {
             margin: 0;
             padding: 0;
             height: 100vh;
             width: 100%;
             overflow: hidden;
-            background-color: #6200EE;
+            background-color: #6200EE; /* Color morado para el notch */
             overscroll-behavior: none; 
             font-family: sans-serif;
             touch-action: none;
+            position: fixed;
         }
 
+        /* Container del iframe con safe areas */
         .iframe-container {
             width: 100%;
             height: 100%;
@@ -43,6 +47,7 @@
             background-color: #6200EE;
         }
 
+        /* Iframe ajustado para notch */
         iframe {
             width: 100%;
             border: none;
@@ -56,10 +61,12 @@
             transition: opacity 0.8s ease-in-out;
         }
 
+        /* Iframe visible después de cargar */
         .iframe-visible {
             opacity: 1 !important;
         }
 
+        /* Pantalla de carga */
         #loading-screen {
             position: absolute;
             top: env(safe-area-inset-top);
@@ -74,6 +81,7 @@
             transition: opacity 0.5s ease-out;
         }
 
+        /* Spinner de carga */
         .spinner {
             width: 50px;
             height: 50px;
@@ -88,6 +96,7 @@
             100% { transform: rotate(360deg); }
         }
         
+        /* Ocultar loader */
         .hidden {
             opacity: 0;
             pointer-events: none;
@@ -96,10 +105,12 @@
 </head>
 <body>
     <div class="iframe-container">
+        <!-- Pantalla de carga -->
         <div id="loading-screen">
             <div class="spinner"></div>
         </div>
 
+        <!-- Iframe de la app -->
         <iframe 
             id="miIframe"
             src="https://script.google.com/macros/s/AKfycbwXerXFBoPpJ-yxPQbT04eROiwv0ivfy6G_ZvwPzJQfS5I2nJ-MIRd9FeBJwKUaL5s/exec" 
@@ -112,11 +123,26 @@
         function appCargada() {
             const loader = document.getElementById('loading-screen');
             const iframe = document.getElementById('miIframe');
+
+            // Ocultar loader
             loader.classList.add('hidden');
+            
+            // Mostrar iframe con fade-in
             iframe.classList.add('iframe-visible');
+
+            // Limpiar loader del DOM después de la transición
             setTimeout(() => {
                 loader.style.display = 'none';
             }, 500);
+        }
+
+        // Service Worker para PWA (opcional)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('SW registrado'))
+                    .catch(err => console.log('SW error:', err));
+            });
         }
     </script>
 </body>
