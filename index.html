@@ -5,39 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Inspección Catenaria</title>
 
+    <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
 
+    <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Catenaria">
     <meta name="theme-color" content="#6200EE">
+    <meta name="mobile-web-app-capable" content="yes">
 
     <style>
-        /* Reset General */
-        body, html {
+        /* ============================================
+           RESET ABSOLUTO - CRÍTICO PARA FULLSCREEN
+        ============================================ */
+        * {
             margin: 0;
             padding: 0;
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            background-color: #6200EE; 
-            overscroll-behavior: none; 
-            font-family: sans-serif;
-            touch-action: none;
-            position: fixed; /* Evita rebote en iOS */
+            box-sizing: border-box;
         }
 
-        /* Container FULL SCREEN (Sin padding, la app interna lo gestiona) */
-        .iframe-container {
+        html, body {
             width: 100%;
             height: 100%;
+            overflow: hidden; /* ✅ CRÍTICO: Elimina scroll externo */
+            position: fixed; /* ✅ CRÍTICO: Evita rebote en iOS */
+            background-color: #6200EE;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            overscroll-behavior: none; /* ✅ CRÍTICO: Evita rebote elástico */
+            -webkit-overflow-scrolling: touch;
+            touch-action: none; /* ✅ CRÍTICO: Bloquea gestos nativos */
+        }
+
+        /* ============================================
+           CONTAINER FULLSCREEN (Sin padding)
+        ============================================ */
+        #app-wrapper {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh; /* Dynamic viewport height para móviles */
             position: relative;
+            display: flex;
+            flex-direction: column;
             background-color: #6200EE;
         }
 
-        /* Iframe ocupando el 100% real */
+        /* ============================================
+           IFRAME FULLSCREEN REAL
+        ============================================ */
         iframe {
             width: 100%;
             height: 100%;
@@ -47,95 +64,299 @@
             left: 0;
             right: 0;
             bottom: 0;
-            opacity: 0; 
+            opacity: 0;
             transition: opacity 0.8s ease-in-out;
-            /* Importante: permite que la app interna gestione el scroll */
-            overflow-y: auto; 
-            -webkit-overflow-scrolling: touch;
+            /* Permite que el contenido interno gestione el scroll */
+            overflow: hidden;
         }
 
-        /* Iframe visible después de cargar */
-        .iframe-visible {
-            opacity: 1 !important;
+        iframe.loaded {
+            opacity: 1;
         }
 
-        /* Pantalla de carga */
+        /* ============================================
+           PANTALLA DE CARGA
+        ============================================ */
         #loading-screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #f0f2f5;
+            background: linear-gradient(135deg, #6200EE 0%, #7c4dff 100%);
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 10;
-            transition: opacity 0.5s ease-out;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
         }
 
-        /* Spinner de carga */
+        #loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* Logo/Icono de la app */
+        .app-logo {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        /* Spinner moderno */
+        .spinner-container {
+            position: relative;
+            width: 60px;
+            height: 60px;
+        }
+
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #ccc;
-            border-top: 5px solid #6200EE;
+            width: 100%;
+            height: 100%;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
         }
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
-        /* Ocultar loader */
-        .hidden {
-            opacity: 0;
-            pointer-events: none;
+
+        /* Texto de carga */
+        .loading-text {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 24px;
+            letter-spacing: 0.5px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Versión de la app */
+        .app-version {
+            position: absolute;
+            bottom: calc(20px + env(safe-area-inset-bottom, 20px));
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* ============================================
+           ERROR SCREEN (Por si falla la carga)
+        ============================================ */
+        #error-screen {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #d32f2f;
+            color: white;
+            padding: 40px;
+            text-align: center;
+            z-index: 10000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #error-screen.show {
+            display: flex;
+        }
+
+        .error-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .error-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .error-message {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .retry-button {
+            background: white;
+            color: #d32f2f;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .retry-button:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
 <body>
-    <div class="iframe-container">
+    <div id="app-wrapper">
+        
+        <!-- Loading Screen -->
         <div id="loading-screen">
-            <div class="spinner"></div>
+            <div class="app-logo">
+                🚄
+            </div>
+            <div class="spinner-container">
+                <div class="spinner"></div>
+            </div>
+            <div class="loading-text">Cargando Inspección...</div>
+            <div class="app-version">v2.0</div>
         </div>
 
+        <!-- Error Screen -->
+        <div id="error-screen">
+            <div class="error-icon">⚠️</div>
+            <div class="error-title">Error al Cargar</div>
+            <div class="error-message">
+                No se pudo conectar con el servidor.<br>
+                Verifica tu conexión a Internet.
+            </div>
+            <button class="retry-button" onclick="location.reload()">Reintentar</button>
+        </div>
+
+        <!-- Iframe Principal -->
         <iframe 
-            id="miIframe"
-            src="https://script.google.com/macros/s/AKfycbwXerXFBoPpJ-yxPQbT04eROiwv0ivfy6G_ZvwPzJQfS5I2nJ-MIRd9FeBJwKUaL5s/exec" 
+            id="app-iframe"
+            src="https://script.google.com/macros/s/AKfycbwXerXFBoPpJ-yxPQbT04eROiwv0ivfy6G_ZvwPzJQfS5I2nJ-MIRd9FeBJwKUaL5s/exec"
             allow="camera; geolocation; microphone; fullscreen"
             allowfullscreen
-            onload="appCargada()">
+            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals"
+            loading="eager">
         </iframe>
     </div>
 
     <script>
-        function appCargada() {
-            const loader = document.getElementById('loading-screen');
-            const iframe = document.getElementById('miIframe');
+        // ============================================
+        // GESTIÓN DE CARGA DEL IFRAME
+        // ============================================
+        const iframe = document.getElementById('app-iframe');
+        const loadingScreen = document.getElementById('loading-screen');
+        const errorScreen = document.getElementById('error-screen');
+        
+        let loadTimeout;
+        const MAX_LOAD_TIME = 15000; // 15 segundos máximo
 
-            // Ocultar loader
-            loader.classList.add('hidden');
+        // Timeout de seguridad
+        loadTimeout = setTimeout(() => {
+            if (!iframe.classList.contains('loaded')) {
+                console.error('Timeout: La aplicación tardó demasiado en cargar');
+                showError();
+            }
+        }, MAX_LOAD_TIME);
+
+        // Evento de carga exitosa
+        iframe.addEventListener('load', function() {
+            clearTimeout(loadTimeout);
             
-            // Mostrar iframe con fade-in
-            iframe.classList.add('iframe-visible');
-
-            // Limpiar loader del DOM después de la transición
+            console.log('✅ Aplicación cargada correctamente');
+            
+            // Esperar un momento antes de ocultar el loading
             setTimeout(() => {
-                loader.style.display = 'none';
-            }, 500);
+                loadingScreen.classList.add('hidden');
+                iframe.classList.add('loaded');
+            }, 800);
+        });
+
+        // Evento de error de carga
+        iframe.addEventListener('error', function() {
+            clearTimeout(loadTimeout);
+            console.error('❌ Error al cargar la aplicación');
+            showError();
+        });
+
+        function showError() {
+            loadingScreen.classList.add('hidden');
+            errorScreen.classList.add('show');
         }
 
-        // Service Worker para PWA (opcional)
+        // ============================================
+        // SERVICE WORKER (PWA)
+        // ============================================
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
-                    .then(reg => console.log('SW registrado'))
-                    .catch(err => console.log('SW error:', err));
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('⚠️ Error en Service Worker:', error);
+                    });
             });
         }
+
+        // ============================================
+        // OPTIMIZACIONES MÓVILES
+        // ============================================
+        
+        // Evitar zoom en doble tap (iOS)
+        document.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
+        // Evitar zoom con gestos (iOS)
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
+
+        // Log de viewport para debugging
+        console.log('Viewport:', {
+            width: window.innerWidth,
+            height: window.innerHeight,
+            devicePixelRatio: window.devicePixelRatio,
+            safeAreaTop: getComputedStyle(document.documentElement).getPropertyValue('--sat'),
+            safeAreaBottom: getComputedStyle(document.documentElement).getPropertyValue('--sab')
+        });
+
+        // Actualizar altura en cambio de orientación
+        window.addEventListener('resize', () => {
+            // Forzar recálculo de altura
+            document.documentElement.style.height = window.innerHeight + 'px';
+        });
+
+        // Prevenir pull-to-refresh en Chrome Android
+        let touchStartY = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            const touchY = e.touches[0].clientY;
+            const touchDiff = touchY - touchStartY;
+            
+            if (touchDiff > 0 && window.scrollY === 0) {
+                e.preventDefault();
+            }
+        }, { passive: false });
     </script>
 </body>
 </html>
