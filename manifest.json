@@ -1,9 +1,10 @@
 {
   "name": "Inspección Catenaria",
   "short_name": "Catenaria",
-  "start_url": "./index.html",
+  "description": "App de inspección de catenaria ferroviaria",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#f0f2f5",
+  "background_color": "#6200EE",
   "theme_color": "#6200EE",
   "orientation": "portrait",
   "icons": [
