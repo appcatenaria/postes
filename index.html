@@ -769,7 +769,7 @@
     // iOS - Cerrar banner
     if (alreadyInstalledBtn) {
         alreadyInstalledBtn.addEventListener('click', () => {
-            installBannerIOS.classList.remove('show');
+            installBannerIOS.classList.remove('visible');
             setTimeout(() => {
                 installBannerIOS.classList.remove('visible'); // 🔧 AÑADIR
             }, 400);
@@ -784,7 +784,7 @@
     // 🔧 FIX: Botón "Ya está instalada" SEPARADO
     if (alreadyInstalledBtn) {
         alreadyInstalledBtn.addEventListener('click', () => {
-            installBannerIOS.classList.remove('show');
+            installBannerIOS.classList.remove('visible');
             
             // Marcar como instalada PERMANENTEMENTE
             localStorage.setItem('pwa-installed', 'true');
@@ -798,7 +798,7 @@
     if (installBannerIOS) {
         installBannerIOS.addEventListener('click', (e) => {
             if (e.target === installBannerIOS) {
-                installBannerIOS.classList.remove('show');
+                installBannerIOS.classList.remove('visible');
                 
                 const expiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
                 localStorage.setItem('install-banner-dismissed', expiry);
@@ -833,7 +833,7 @@
     window.addEventListener('appinstalled', () => {
         console.log('✅ App instalada exitosamente');
         installBannerAndroid.classList.remove('show');
-        installBannerIOS.classList.remove('show');
+        installBannerIOS.classList.remove('visible');
         localStorage.setItem('app-installed', 'true');
     });
 
