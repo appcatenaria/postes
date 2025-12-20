@@ -342,6 +342,7 @@
            BANNER INSTALAR - iOS/SAFARI
         ============================================ */
         #install-banner-ios {
+            display: none !important;
             position: fixed;
             bottom: 0;
             left: 0;
@@ -808,9 +809,26 @@
             });
         }
 
-        // iOS - Mostrar banner si es iOS y no está instalada
-        if (isIOS() && !isInStandaloneMode()) {
-            showInstallBanner();
+        // iOS - Mostrar banner SOLO si NO está instalada
+        if (isIOS()) {
+            setTimeout(() => {
+                // Triple verificación
+                const installed = localStorage.getItem('pwa-installed') === 'true' || 
+                                 localStorage.getItem('app-installed') === 'true' ||
+                                 window.navigator.standalone === true ||
+                                 window.matchMedia('(display-mode: standalone)').matches;
+                
+                if (!installed && !wasBannerDismissed()) {
+                    // Remover display:none y mostrar
+                    installBannerIOS.style.removeProperty('display');
+                    setTimeout(() => {
+                        installBannerIOS.classList.add('show');
+                        console.log('📱 Banner iOS mostrado');
+                    }, 500);
+                } else {
+                    console.log('✅ App ya instalada - Banner NO mostrado');
+                }
+            }, 8000); // Esperar 8 segundos
         }
 
         // Detectar instalación exitosa
