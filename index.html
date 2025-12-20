@@ -16,9 +16,6 @@
     <meta name="mobile-web-app-capable" content="yes">
 
     <style>
-        /* ============================================
-           RESET ABSOLUTO
-        ============================================ */
         * {
             margin: 0;
             padding: 0;
@@ -37,9 +34,6 @@
             touch-action: none;
         }
 
-        /* ============================================
-           CONTAINER FULLSCREEN
-        ============================================ */
         #app-wrapper {
             width: 100vw;
             height: 100vh;
@@ -50,9 +44,6 @@
             background: linear-gradient(135deg, #6200EE 0%, #7c4dff 50%, #9575cd 100%);
         }
 
-        /* ============================================
-           IFRAME FULLSCREEN
-        ============================================ */
         iframe {
             width: 100%;
             height: 100%;
@@ -69,9 +60,6 @@
             opacity: 1;
         }
 
-        /* ============================================
-           LOADING SCREEN MINIMALISTA
-        ============================================ */
         #loading-screen {
             position: absolute;
             top: 0;
@@ -158,9 +146,6 @@
             letter-spacing: 1px;
         }
 
-        /* ============================================
-           ERROR SCREEN
-        ============================================ */
         #error-screen {
             display: none;
             position: absolute;
@@ -230,19 +215,10 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        /* ============================================
-           BANNER INSTALAR - ANDROID/CHROME
-        ============================================ */
         #install-banner-android {
             position: fixed;
             bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
@@ -338,9 +314,6 @@
             background: #f0f0f0;
         }
 
-        /* ============================================
-           BANNER INSTALAR - iOS/SAFARI
-        ============================================ */
         #install-banner-ios {
             position: fixed;
             bottom: 0;
@@ -353,22 +326,20 @@
             z-index: 10001;
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             padding-bottom: env(safe-area-inset-bottom, 20px);
-            /* 🔧 OCULTO POR DEFECTO CON CLASE */
             visibility: hidden;
             opacity: 0;
             pointer-events: none;
         }
-        
+
         #install-banner-ios.visible {
             visibility: visible;
             opacity: 1;
             pointer-events: auto;
         }
-        
+
         #install-banner-ios.show {
             transform: translateY(0);
         }
-        
 
         .install-content-ios {
             padding: 20px;
@@ -474,6 +445,7 @@
         #install-banner-ios.show::before {
             opacity: 1;
         }
+
         .already-installed-btn {
             width: 100%;
             background: transparent;
@@ -487,13 +459,12 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        
+
         .already-installed-btn:active {
             background: #6200EE;
             color: white;
         }
 
-        /* Dark mode */
         body.dark-mode #install-banner-android,
         body.dark-mode #install-banner-ios {
             background: #1E1E1E;
@@ -520,24 +491,17 @@
 <body>
     <div id="app-wrapper">
         
-        <!-- Loading Screen -->
         <div id="loading-screen">
-            <div class="app-logo">
-                🚄
-            </div>
-            
+            <div class="app-logo">🚄</div>
             <div class="dots-loader">
                 <div class="dot"></div>
                 <div class="dot"></div>
                 <div class="dot"></div>
             </div>
-            
             <div class="loading-text">Cargando aplicación...</div>
-            
             <div class="app-version">VERSIÓN 2.5</div>
         </div>
 
-        <!-- Error Screen -->
         <div id="error-screen">
             <div class="error-icon">⚠️</div>
             <div class="error-title">No se pudo cargar</div>
@@ -547,7 +511,6 @@
             <button class="retry-button" onclick="location.reload()">Reintentar</button>
         </div>
 
-        <!-- Banner Instalar - ANDROID/CHROME -->
         <div id="install-banner-android">
             <div class="install-content">
                 <div class="install-icon">🚄</div>
@@ -560,312 +523,155 @@
             </div>
         </div>
 
-<!-- Banner Instalar - iOS/SAFARI -->
-<div id="install-banner-ios">
-    <div class="install-content-ios">
-        <div class="ios-header">
-            <div class="install-icon">🚄</div>
-            <div class="install-info">
-                <div class="install-title">Instalar en iPhone</div>
-                <div class="install-subtitle">Añadir a pantalla de inicio</div>
-            </div>
-            <button class="close-banner" id="close-banner-ios">✕</button>
-        </div>
-        
-        <div class="ios-steps">
-            <div class="ios-step">
-                <div class="step-number">1</div>
-                <div class="step-text">
-                    Pulsa el botón <strong>Compartir</strong>
-                    <div class="share-icon">
-                        <svg width="20" height="24" viewBox="0 0 20 24" fill="currentColor">
-                            <path d="M10 0L10 15M10 0L6 4M10 0L14 4M3 8v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V8"/>
-                        </svg>
+        <div id="install-banner-ios">
+            <div class="install-content-ios">
+                <div class="ios-header">
+                    <div class="install-icon">🚄</div>
+                    <div class="install-info">
+                        <div class="install-title">Instalar en iPhone</div>
+                        <div class="install-subtitle">Añadir a pantalla de inicio</div>
+                    </div>
+                    <button class="close-banner" id="close-banner-ios">✕</button>
+                </div>
+                
+                <div class="ios-steps">
+                    <div class="ios-step">
+                        <div class="step-number">1</div>
+                        <div class="step-text">
+                            Pulsa el botón <strong>Compartir</strong>
+                            <div class="share-icon">
+                                <svg width="20" height="24" viewBox="0 0 20 24" fill="currentColor">
+                                    <path d="M10 0L10 15M10 0L6 4M10 0L14 4M3 8v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V8"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ios-step">
+                        <div class="step-number">2</div>
+                        <div class="step-text">
+                            Selecciona <strong>"Añadir a pantalla de inicio"</strong>
+                            <div class="add-icon">➕</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="ios-step">
-                <div class="step-number">2</div>
-                <div class="step-text">
-                    Selecciona <strong>"Añadir a pantalla de inicio"</strong>
-                    <div class="add-icon">➕</div>
-                </div>
+                
+                <button class="already-installed-btn" id="already-installed">
+                    Ya está instalada - No volver a mostrar
+                </button>
             </div>
         </div>
-        
-        <!-- 🆕 BOTÓN NUEVO -->
-        <button class="already-installed-btn" id="already-installed">
-            Ya está instalada - No volver a mostrar
-        </button>
-    </div>
-</div>
 
-        <!-- Iframe Principal -->
         <iframe 
             id="app-iframe"
             src="https://script.google.com/macros/s/AKfycbypF6AhFvVsc6fI9VFNmH29BFWzFb2_UxZruEUuNb14nonT7A8Nq50PQTqyU2pDxzI/exec"
             allow="camera; geolocation; microphone"
-            allowfullscreen
             sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals"
             loading="eager">
         </iframe>
     </div>
 
-<script>
-    // ============================================
-    // GESTIÓN DE CARGA DEL IFRAME
-    // ============================================
-    const iframe = document.getElementById('app-iframe');
-    const loadingScreen = document.getElementById('loading-screen');
-    const errorScreen = document.getElementById('error-screen');
-    
-    let loadTimeout;
-    const MAX_LOAD_TIME = 15000;
-
-    loadTimeout = setTimeout(() => {
-        if (!iframe.classList.contains('loaded')) {
-            console.error('⏱️ Timeout: Carga demasiado lenta');
-            showError();
-        }
-    }, MAX_LOAD_TIME);
-
-    iframe.addEventListener('load', function() {
-        clearTimeout(loadTimeout);
-        console.log('✅ App cargada');
+    <script>
+        const iframe = document.getElementById('app-iframe');
+        const loadingScreen = document.getElementById('loading-screen');
+        const errorScreen = document.getElementById('error-screen');
         
-        setTimeout(() => {
-            loadingScreen.classList.add('hidden');
-            iframe.classList.add('loaded');
-        }, 1200);
-    });
-
-    iframe.addEventListener('error', function() {
-        clearTimeout(loadTimeout);
-        console.error('❌ Error de carga');
-        showError();
-    });
-
-    function showError() {
-        loadingScreen.classList.add('hidden');
-        errorScreen.classList.add('show');
-    }
-
-    // ============================================
-    // PWA INSTALL PROMPT - iOS + ANDROID
-    // ============================================
-
-    // Detectar plataforma
-    function isIOS() {
-        const userAgent = window.navigator.userAgent.toLowerCase();
-        return /iphone|ipad|ipod/.test(userAgent);
-    }
-
-    function isInStandaloneMode() {
-        if (window.navigator.standalone === true) return true;
-        if (window.matchMedia('(display-mode: standalone)').matches) return true;
-        if (document.referrer.includes('android-app://')) return true;
-        if (window.location.href.includes('?utm_source=homescreen')) return true;
-        if (localStorage.getItem('pwa-installed') === 'true') return true;
-        return false;
-    }
-
-    // Variables
-    let deferredPrompt;
-    const installBannerAndroid = document.getElementById('install-banner-android');
-    const installBannerIOS = document.getElementById('install-banner-ios');
-    const installButton = document.getElementById('install-button');
-    const closeBannerAndroid = document.getElementById('close-banner-android');
-    const closeBannerIOS = document.getElementById('close-banner-ios');
-    const alreadyInstalledBtn = document.getElementById('already-installed');
-
-    // Verificar si el banner fue cerrado
-    function wasBannerDismissed() {
-        const dismissExpiry = localStorage.getItem('install-banner-dismissed');
-        if (!dismissExpiry) return false;
-        
-        const expiry = parseInt(dismissExpiry);
-        if (Date.now() > expiry) {
-            localStorage.removeItem('install-banner-dismissed');
-            return false;
-        }
-        return true;
-    }
-
-    // Mostrar banner correspondiente
-    function showInstallBanner() {
-        if (localStorage.getItem('pwa-installed') === 'true' || 
-            localStorage.getItem('app-installed') === 'true') {
-            console.log('✅ App ya instalada (flag localStorage)');
-            return;
-        }
-        
-        if (isInStandaloneMode()) {
-            console.log('✅ App ya instalada (standalone mode)');
-            localStorage.setItem('pwa-installed', 'true');
-            return;
-        }
-        
-        if (wasBannerDismissed()) {
-            console.log('⏸️ Banner cerrado recientemente');
-            return;
-        }
-        
-        setTimeout(() => {
-            if (isIOS()) {
-                installBannerIOS.classList.add('show');
-                console.log('📱 Banner iOS mostrado');
-            } else if (deferredPrompt) {
-                installBannerAndroid.classList.add('show');
-                console.log('🤖 Banner Android mostrado');
+        let loadTimeout = setTimeout(() => {
+            if (!iframe.classList.contains('loaded')) {
+                loadingScreen.classList.add('hidden');
+                errorScreen.classList.add('show');
             }
-        }, 5000);
-    }
+        }, 15000);
 
-    // ANDROID - Detectar cuando la app es instalable
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        
-        if (isIOS()) {
-            console.log('⚠️ Ignorando prompt Android en iOS');
-            return;
-        }
-        
-        showInstallBanner();
-    });
-
-    // ANDROID - Botón Instalar
-    if (installButton) {
-        installButton.addEventListener('click', async () => {
-            if (!deferredPrompt) {
-                console.log('⚠️ No hay prompt disponible');
-                return;
-            }
-            
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            
-            console.log(`Usuario ${outcome === 'accepted' ? 'aceptó' : 'rechazó'} instalar`);
-            
-            deferredPrompt = null;
-            installBannerAndroid.classList.remove('show');
-            
-            if (outcome === 'accepted') {
-                localStorage.setItem('app-installed', 'true');
-            }
-        });
-    }
-
-    // ANDROID - Cerrar banner
-    if (closeBannerAndroid) {
-        closeBannerAndroid.addEventListener('click', () => {
-            installBannerAndroid.classList.remove('show');
-            
-            const expiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
-            localStorage.setItem('install-banner-dismissed', expiry);
-        });
-    }
-
-    // iOS - Cerrar banner
-    if (alreadyInstalledBtn) {
-        alreadyInstalledBtn.addEventListener('click', () => {
-            installBannerIOS.classList.remove('visible');
+        iframe.addEventListener('load', () => {
+            clearTimeout(loadTimeout);
             setTimeout(() => {
-                installBannerIOS.classList.remove('visible'); // 🔧 AÑADIR
-            }, 400);
-            
-            localStorage.setItem('pwa-installed', 'true');
-            localStorage.setItem('app-installed', 'true');
-            
-            console.log('✅ Usuario confirmó que la app ya está instalada');
+                loadingScreen.classList.add('hidden');
+                iframe.classList.add('loaded');
+            }, 1200);
         });
-    }
 
-    // 🔧 FIX: Botón "Ya está instalada" SEPARADO
-    if (alreadyInstalledBtn) {
-        alreadyInstalledBtn.addEventListener('click', () => {
-            installBannerIOS.classList.remove('visible');
-            
-            // Marcar como instalada PERMANENTEMENTE
-            localStorage.setItem('pwa-installed', 'true');
-            localStorage.setItem('app-installed', 'true');
-            
-            console.log('✅ Usuario confirmó que la app ya está instalada');
-        });
-    }
-
-    // iOS - Cerrar al tocar el backdrop
-    if (installBannerIOS) {
-        installBannerIOS.addEventListener('click', (e) => {
-            if (e.target === installBannerIOS) {
-                installBannerIOS.classList.remove('visible');
-                
-                const expiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
-                localStorage.setItem('install-banner-dismissed', expiry);
-            }
-        });
-    }
-
-    // 🔧 FIX CRÍTICO: iOS - Mostrar banner SOLO si NO está instalada
-    if (isIOS()) {
-        setTimeout(() => {
-            const installed = localStorage.getItem('pwa-installed') === 'true' || 
-                             localStorage.getItem('app-installed') === 'true' ||
-                             window.navigator.standalone === true ||
-                             window.matchMedia('(display-mode: standalone)').matches;
-            
-        if (!installed && !wasBannerDismissed()) {
-            console.log('📱 Mostrando banner iOS...');
-            
-            // Paso 1: Hacer visible el banner
-            installBannerIOS.classList.add('visible');
-            
-            // Paso 2: Animar entrada después de un frame
-            setTimeout(() => {
-                installBannerIOS.classList.add('show');
-                console.log('✅ Banner iOS mostrado');
-            }, 50);
-        } else {
-            console.log('✅ App ya instalada - Banner NO mostrado');
+        function isIOS() {
+            return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
         }
 
-    // Detectar instalación exitosa
-    window.addEventListener('appinstalled', () => {
-        console.log('✅ App instalada exitosamente');
-        installBannerAndroid.classList.remove('show');
-        installBannerIOS.classList.remove('visible');
-        localStorage.setItem('app-installed', 'true');
-    });
+        function isInStandaloneMode() {
+            return window.navigator.standalone === true || 
+                   window.matchMedia('(display-mode: standalone)').matches ||
+                   localStorage.getItem('pwa-installed') === 'true';
+        }
 
-    // Debug info
-    console.log('🔍 Plataforma:', isIOS() ? 'iOS' : 'Android/Other');
-    console.log('🔍 Standalone:', isInStandaloneMode());
-    console.log('🔍 Banner dismissed:', wasBannerDismissed());
+        let deferredPrompt;
+        const installBannerAndroid = document.getElementById('install-banner-android');
+        const installBannerIOS = document.getElementById('install-banner-ios');
+        const installButton = document.getElementById('install-button');
 
-    // ============================================
-    // OPTIMIZACIONES MÓVILES
-    // ============================================
-    
-    document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
-    document.addEventListener('gesturestart', e => e.preventDefault());
+        function wasBannerDismissed() {
+            const expiry = localStorage.getItem('install-banner-dismissed');
+            return expiry && Date.now() < parseInt(expiry);
+        }
 
-    let touchStartY = 0;
-    document.addEventListener('touchstart', e => {
-        touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-
-    document.addEventListener('touchmove', e => {
-        const touchY = e.touches[0].clientY;
-        const touchDiff = touchY - touchStartY;
-        
-        if (touchDiff > 0 && window.scrollY === 0) {
+        window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
-        }
-    }, { passive: false });
+            deferredPrompt = e;
+            
+            if (!isIOS() && !isInStandaloneMode() && !wasBannerDismissed()) {
+                setTimeout(() => {
+                    installBannerAndroid.classList.add('show');
+                }, 5000);
+            }
+        });
 
-    window.addEventListener('resize', () => {
-        document.documentElement.style.height = window.innerHeight + 'px';
-    });
-</script>
+        if (installButton) {
+            installButton.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                installBannerAndroid.classList.remove('show');
+                if (outcome === 'accepted') {
+                    localStorage.setItem('pwa-installed', 'true');
+                }
+            });
+        }
+
+        document.getElementById('close-banner-android')?.addEventListener('click', () => {
+            installBannerAndroid.classList.remove('show');
+            localStorage.setItem('install-banner-dismissed', Date.now() + (7 * 24 * 60 * 60 * 1000));
+        });
+
+        document.getElementById('close-banner-ios')?.addEventListener('click', () => {
+            installBannerIOS.classList.remove('show');
+            setTimeout(() => installBannerIOS.classList.remove('visible'), 400);
+            localStorage.setItem('install-banner-dismissed', Date.now() + (7 * 24 * 60 * 60 * 1000));
+        });
+
+        document.getElementById('already-installed')?.addEventListener('click', () => {
+            installBannerIOS.classList.remove('show');
+            setTimeout(() => installBannerIOS.classList.remove('visible'), 400);
+            localStorage.setItem('pwa-installed', 'true');
+        });
+
+        installBannerIOS?.addEventListener('click', (e) => {
+            if (e.target === installBannerIOS) {
+                installBannerIOS.classList.remove('show');
+                setTimeout(() => installBannerIOS.classList.remove('visible'), 400);
+            }
+        });
+
+        if (isIOS()) {
+            setTimeout(() => {
+                if (!isInStandaloneMode() && !wasBannerDismissed()) {
+                    installBannerIOS.classList.add('visible');
+                    setTimeout(() => installBannerIOS.classList.add('show'), 50);
+                    console.log('📱 Banner iOS mostrado');
+                } else {
+                    console.log('✅ Banner iOS no mostrado');
+                }
+            }, 8000);
+        }
+
+        document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
+        document.addEventListener('gesturestart', e => e.preventDefault());
+    </script>
 </body>
 </html>
