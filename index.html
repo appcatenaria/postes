@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Inspección Catenaria</title>
 
-    <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
 
-    <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Catenaria">
@@ -18,9 +16,6 @@
     <meta name="mobile-web-app-capable" content="yes">
 
     <style>
-        /* ============================================
-           RESET ABSOLUTO - CRÍTICO PARA FULLSCREEN
-        ============================================ */
         * {
             margin: 0;
             padding: 0;
@@ -30,31 +25,25 @@
         html, body {
             width: 100%;
             height: 100%;
-            overflow: hidden; /* ✅ CRÍTICO: Elimina scroll externo */
-            position: fixed; /* ✅ CRÍTICO: Evita rebote en iOS */
+            overflow: hidden;
+            position: fixed;
             background-color: #6200EE;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            overscroll-behavior: none; /* ✅ CRÍTICO: Evita rebote elástico */
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            overscroll-behavior: none;
             -webkit-overflow-scrolling: touch;
-            touch-action: none; /* ✅ CRÍTICO: Bloquea gestos nativos */
+            touch-action: none;
         }
 
-        /* ============================================
-           CONTAINER FULLSCREEN (Sin padding)
-        ============================================ */
         #app-wrapper {
             width: 100vw;
             height: 100vh;
-            height: 100dvh; /* Dynamic viewport height para móviles */
+            height: 100dvh;
             position: relative;
             display: flex;
             flex-direction: column;
-            background-color: #6200EE;
+            background: linear-gradient(135deg, #6200EE 0%, #7c4dff 50%, #9575cd 100%);
         }
 
-        /* ============================================
-           IFRAME FULLSCREEN REAL
-        ============================================ */
         iframe {
             width: 100%;
             height: 100%;
@@ -62,11 +51,8 @@
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
             opacity: 0;
-            transition: opacity 0.8s ease-in-out;
-            /* Permite que el contenido interno gestione el scroll */
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
         }
 
@@ -75,7 +61,7 @@
         }
 
         /* ============================================
-           PANTALLA DE CARGA
+           LOADING SCREEN MODERNO (iOS/Android style)
         ============================================ */
         #loading-screen {
             position: absolute;
@@ -83,82 +69,117 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #6200EE 0%, #7c4dff 100%);
+            background: linear-gradient(135deg, #6200EE 0%, #7c4dff 50%, #9575cd 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+            transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         #loading-screen.hidden {
             opacity: 0;
-            visibility: hidden;
+            transform: scale(0.95);
             pointer-events: none;
         }
 
-        /* Logo/Icono de la app */
+        /* Logo App con animación */
         .app-logo {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             background: white;
-            border-radius: 20px;
+            border-radius: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
-            margin-bottom: 24px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            font-size: 50px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            animation: float 3s ease-in-out infinite;
         }
 
-        /* Spinner moderno */
-        .spinner-container {
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Skeleton Loader iOS/Android */
+        .skeleton-loader {
+            width: 280px;
+            height: 8px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 4px;
+            overflow: hidden;
             position: relative;
-            width: 60px;
-            height: 60px;
+            margin-bottom: 16px;
         }
 
-        .spinner {
+        .skeleton-loader::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
             width: 100%;
             height: 100%;
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top: 4px solid white;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            100% { left: 100%; }
+        }
+
+        /* Dots loader moderno */
+        .dots-loader {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: white;
             border-radius: 50%;
-            animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+            animation: bounce 1.4s infinite ease-in-out;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        .dot:nth-child(3) { animation-delay: 0s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { 
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% { 
+                transform: scale(1.2);
+                opacity: 1;
+            }
         }
 
-        /* Texto de carga */
         .loading-text {
             color: white;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             margin-top: 24px;
-            letter-spacing: 0.5px;
-            animation: pulse 2s ease-in-out infinite;
+            letter-spacing: 0.3px;
+            opacity: 0.95;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-
-        /* Versión de la app */
         .app-version {
             position: absolute;
-            bottom: calc(20px + env(safe-area-inset-bottom, 20px));
-            color: rgba(255,255,255,0.7);
-            font-size: 12px;
+            bottom: calc(30px + env(safe-area-inset-bottom, 20px));
+            color: rgba(255,255,255,0.6);
+            font-size: 11px;
             font-weight: 500;
+            letter-spacing: 1px;
         }
 
         /* ============================================
-           ERROR SCREEN (Por si falla la carga)
+           ERROR SCREEN MEJORADO
         ============================================ */
         #error-screen {
             display: none;
@@ -167,7 +188,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #d32f2f;
+            background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
             color: white;
             padding: 40px;
             text-align: center;
@@ -179,67 +200,126 @@
 
         #error-screen.show {
             display: flex;
+            animation: fadeIn 0.3s ease-out;
         }
 
         .error-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 24px;
         }
 
         .error-title {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 700;
             margin-bottom: 12px;
         }
 
         .error-message {
-            font-size: 14px;
+            font-size: 15px;
             opacity: 0.9;
             line-height: 1.6;
-            margin-bottom: 24px;
+            margin-bottom: 32px;
+            max-width: 300px;
         }
 
         .retry-button {
             background: white;
             color: #d32f2f;
             border: none;
-            padding: 14px 28px;
+            padding: 16px 40px;
             border-radius: 50px;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 15px;
             cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            letter-spacing: 1px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            transition: all 0.2s;
         }
 
         .retry-button:active {
             transform: scale(0.95);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* Animación de entrada */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Progress bar tipo iOS */
+        .progress-bar {
+            width: 280px;
+            height: 3px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 24px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: white;
+            width: 0%;
+            animation: progress 8s ease-in-out infinite;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
         }
     </style>
 </head>
 <body>
     <div id="app-wrapper">
         
-        <!-- Loading Screen -->
+        <!-- Loading Screen Renovado -->
         <div id="loading-screen">
             <div class="app-logo">
                 🚄
             </div>
-            <div class="spinner-container">
-                <div class="spinner"></div>
+            
+            <!-- Skeleton loader -->
+            <div class="skeleton-loader"></div>
+            
+            <!-- Dots loader -->
+            <div class="dots-loader">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
             </div>
-            <div class="loading-text">Cargando Inspección...</div>
-            <div class="app-version">v2.0</div>
+            
+            <div class="loading-text">Cargando aplicación...</div>
+            
+            <!-- Progress bar -->
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            
+            <div class="app-version">VERSIÓN 2.5</div>
         </div>
 
         <!-- Error Screen -->
         <div id="error-screen">
             <div class="error-icon">⚠️</div>
-            <div class="error-title">Error al Cargar</div>
+            <div class="error-title">No se pudo cargar</div>
             <div class="error-message">
-                No se pudo conectar con el servidor.<br>
-                Verifica tu conexión a Internet.
+                Verifica tu conexión a Internet y vuelve a intentarlo.
             </div>
             <button class="retry-button" onclick="location.reload()">Reintentar</button>
         </div>
@@ -256,41 +336,33 @@
     </div>
 
     <script>
-        // ============================================
-        // GESTIÓN DE CARGA DEL IFRAME
-        // ============================================
         const iframe = document.getElementById('app-iframe');
         const loadingScreen = document.getElementById('loading-screen');
         const errorScreen = document.getElementById('error-screen');
         
         let loadTimeout;
-        const MAX_LOAD_TIME = 15000; // 15 segundos máximo
+        const MAX_LOAD_TIME = 15000;
 
-        // Timeout de seguridad
         loadTimeout = setTimeout(() => {
             if (!iframe.classList.contains('loaded')) {
-                console.error('Timeout: La aplicación tardó demasiado en cargar');
+                console.error('⏱️ Timeout: Carga demasiado lenta');
                 showError();
             }
         }, MAX_LOAD_TIME);
 
-        // Evento de carga exitosa
         iframe.addEventListener('load', function() {
             clearTimeout(loadTimeout);
+            console.log('✅ App cargada');
             
-            console.log('✅ Aplicación cargada correctamente');
-            
-            // Esperar un momento antes de ocultar el loading
             setTimeout(() => {
                 loadingScreen.classList.add('hidden');
                 iframe.classList.add('loaded');
-            }, 800);
+            }, 1200);
         });
 
-        // Evento de error de carga
         iframe.addEventListener('error', function() {
             clearTimeout(loadTimeout);
-            console.error('❌ Error al cargar la aplicación');
+            console.error('❌ Error de carga');
             showError();
         });
 
@@ -299,57 +371,26 @@
             errorScreen.classList.add('show');
         }
 
-        // ============================================
-        // SERVICE WORKER (PWA)
-        // ============================================
+        // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                        console.log('✅ Service Worker registrado:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('⚠️ Error en Service Worker:', error);
-                    });
+                    .then(reg => console.log('✅ SW registrado'))
+                    .catch(err => console.log('⚠️ SW error:', err));
             });
         }
 
-        // ============================================
-        // OPTIMIZACIONES MÓVILES
-        // ============================================
-        
-        // Evitar zoom en doble tap (iOS)
-        document.addEventListener('dblclick', function(e) {
-            e.preventDefault();
-        }, { passive: false });
+        // Evitar zoom
+        document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
+        document.addEventListener('gesturestart', e => e.preventDefault());
 
-        // Evitar zoom con gestos (iOS)
-        document.addEventListener('gesturestart', function(e) {
-            e.preventDefault();
-        });
-
-        // Log de viewport para debugging
-        console.log('Viewport:', {
-            width: window.innerWidth,
-            height: window.innerHeight,
-            devicePixelRatio: window.devicePixelRatio,
-            safeAreaTop: getComputedStyle(document.documentElement).getPropertyValue('--sat'),
-            safeAreaBottom: getComputedStyle(document.documentElement).getPropertyValue('--sab')
-        });
-
-        // Actualizar altura en cambio de orientación
-        window.addEventListener('resize', () => {
-            // Forzar recálculo de altura
-            document.documentElement.style.height = window.innerHeight + 'px';
-        });
-
-        // Prevenir pull-to-refresh en Chrome Android
+        // Prevenir pull-to-refresh
         let touchStartY = 0;
-        document.addEventListener('touchstart', (e) => {
+        document.addEventListener('touchstart', e => {
             touchStartY = e.touches[0].clientY;
         }, { passive: true });
 
-        document.addEventListener('touchmove', (e) => {
+        document.addEventListener('touchmove', e => {
             const touchY = e.touches[0].clientY;
             const touchDiff = touchY - touchStartY;
             
@@ -357,6 +398,11 @@
                 e.preventDefault();
             }
         }, { passive: false });
+
+        // Ajustar altura en resize
+        window.addEventListener('resize', () => {
+            document.documentElement.style.height = window.innerHeight + 'px';
+        });
     </script>
 </body>
 </html>
