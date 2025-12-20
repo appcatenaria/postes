@@ -358,6 +358,7 @@
         #install-banner-ios.show {
             transform: translateY(0);
         }
+        
 
         .install-content-ios {
             padding: 20px;
@@ -463,6 +464,24 @@
         #install-banner-ios.show::before {
             opacity: 1;
         }
+        .already-installed-btn {
+            width: 100%;
+            background: transparent;
+            border: 2px solid #6200EE;
+            color: #6200EE;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            margin-top: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .already-installed-btn:active {
+            background: #6200EE;
+            color: white;
+        }
 
         /* Dark mode */
         body.dark-mode #install-banner-android,
@@ -531,40 +550,45 @@
             </div>
         </div>
 
-        <!-- Banner Instalar - iOS/SAFARI -->
-        <div id="install-banner-ios">
-            <div class="install-content-ios">
-                <div class="ios-header">
-                    <div class="install-icon">🚄</div>
-                    <div class="install-info">
-                        <div class="install-title">Instalar en iPhone</div>
-                        <div class="install-subtitle">Añadir a pantalla de inicio</div>
-                    </div>
-                    <button class="close-banner" id="close-banner-ios">✕</button>
-                </div>
-                
-                <div class="ios-steps">
-                    <div class="ios-step">
-                        <div class="step-number">1</div>
-                        <div class="step-text">
-                            Pulsa el botón <strong>Compartir</strong>
-                            <div class="share-icon">
-                                <svg width="20" height="24" viewBox="0 0 20 24" fill="currentColor">
-                                    <path d="M10 0L10 15M10 0L6 4M10 0L14 4M3 8v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V8"/>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ios-step">
-                        <div class="step-number">2</div>
-                        <div class="step-text">
-                            Selecciona <strong>"Añadir a pantalla de inicio"</strong>
-                            <div class="add-icon">➕</div>
-                        </div>
+<!-- Banner Instalar - iOS/SAFARI -->
+<div id="install-banner-ios">
+    <div class="install-content-ios">
+        <div class="ios-header">
+            <div class="install-icon">🚄</div>
+            <div class="install-info">
+                <div class="install-title">Instalar en iPhone</div>
+                <div class="install-subtitle">Añadir a pantalla de inicio</div>
+            </div>
+            <button class="close-banner" id="close-banner-ios">✕</button>
+        </div>
+        
+        <div class="ios-steps">
+            <div class="ios-step">
+                <div class="step-number">1</div>
+                <div class="step-text">
+                    Pulsa el botón <strong>Compartir</strong>
+                    <div class="share-icon">
+                        <svg width="20" height="24" viewBox="0 0 20 24" fill="currentColor">
+                            <path d="M10 0L10 15M10 0L6 4M10 0L14 4M3 8v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V8"/>
+                        </svg>
                     </div>
                 </div>
             </div>
+            <div class="ios-step">
+                <div class="step-number">2</div>
+                <div class="step-text">
+                    Selecciona <strong>"Añadir a pantalla de inicio"</strong>
+                    <div class="add-icon">➕</div>
+                </div>
+            </div>
         </div>
+        
+        <!-- 🆕 BOTÓN NUEVO -->
+        <button class="already-installed-btn" id="already-installed">
+            Ya está instalada - No volver a mostrar
+        </button>
+    </div>
+</div>
 
         <!-- Iframe Principal -->
         <iframe 
@@ -667,28 +691,37 @@
         }
 
         // Mostrar banner correspondiente
+        // Mostrar banner correspondiente
         function showInstallBanner() {
-            // No mostrar si ya está instalada o en standalone
-            if (isInStandaloneMode() || localStorage.getItem('app-installed')) {
+            // 🔧 VERIFICACIÓN #1: Flag manual (MÁS CONFIABLE)
+            if (localStorage.getItem('pwa-installed') === 'true' || 
+                localStorage.getItem('app-installed') === 'true') {
+                console.log('✅ App ya instalada (flag localStorage)');
                 return;
             }
             
-            // No mostrar si fue cerrado recientemente
+            // 🔧 VERIFICACIÓN #2: Standalone
+            if (isInStandaloneMode()) {
+                console.log('✅ App ya instalada (standalone mode)');
+                localStorage.setItem('pwa-installed', 'true');
+                return;
+            }
+            
+            // 🔧 VERIFICACIÓN #3: Banner cerrado recientemente
             if (wasBannerDismissed()) {
+                console.log('⏸️ Banner cerrado recientemente');
                 return;
             }
             
             setTimeout(() => {
                 if (isIOS()) {
-                    // iOS - Mostrar instrucciones manuales
                     installBannerIOS.classList.add('show');
                     console.log('📱 Banner iOS mostrado');
                 } else if (deferredPrompt) {
-                    // Android/Chrome - Mostrar botón instalar
                     installBannerAndroid.classList.add('show');
                     console.log('🤖 Banner Android mostrado');
                 }
-            }, 10000); // 3 segundos después de cargar
+            }, 5000); // 5 segundos (reducido de 10)
         }
 
         // ANDROID - Detectar cuando la app es instalable
@@ -743,6 +776,19 @@
         // iOS - Cerrar banner
         if (closeBannerIOS) {
             closeBannerIOS.addEventListener('click', () => {
+                // iOS - Botón "Ya está instalada"
+            const alreadyInstalledBtn = document.getElementById('already-installed');
+            if (alreadyInstalledBtn) {
+                alreadyInstalledBtn.addEventListener('click', () => {
+                    installBannerIOS.classList.remove('show');
+                    
+                    // Marcar como instalada PERMANENTEMENTE
+                    localStorage.setItem('pwa-installed', 'true');
+                    localStorage.setItem('app-installed', 'true');
+                    
+                    console.log('✅ Usuario confirmó que la app ya está instalada');
+                });
+            }
                 installBannerIOS.classList.remove('show');
                 
                 const expiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 días
