@@ -570,7 +570,7 @@
         <iframe 
             id="app-iframe"
             src="https://script.google.com/macros/s/AKfycbypF6AhFvVsc6fI9VFNmH29BFWzFb2_UxZruEUuNb14nonT7A8Nq50PQTqyU2pDxzI/exec"
-            allow="camera; geolocation; microphone; fullscreen"
+            allow="camera; geolocation; microphone"
             allowfullscreen
             sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals"
             loading="eager">
@@ -696,7 +696,11 @@
             e.preventDefault();
             deferredPrompt = e;
             
-            console.log('✅ App lista para instalar (Android)');
+            // No mostrar banner Android si es iOS
+            if (isIOS()) {
+                console.log('⚠️ Ignorando prompt Android en iOS');
+                return;
+            }
             
             // Mostrar banner si no es iOS
             if (!isIOS()) {
