@@ -602,272 +602,254 @@
         </iframe>
     </div>
 
-    <script>
-        // ============================================
-        // GESTIÓN DE CARGA DEL IFRAME
-        // ============================================
-        const iframe = document.getElementById('app-iframe');
-        const loadingScreen = document.getElementById('loading-screen');
-        const errorScreen = document.getElementById('error-screen');
-        
-        let loadTimeout;
-        const MAX_LOAD_TIME = 15000;
+<script>
+    // ============================================
+    // GESTIÓN DE CARGA DEL IFRAME
+    // ============================================
+    const iframe = document.getElementById('app-iframe');
+    const loadingScreen = document.getElementById('loading-screen');
+    const errorScreen = document.getElementById('error-screen');
+    
+    let loadTimeout;
+    const MAX_LOAD_TIME = 15000;
 
-        loadTimeout = setTimeout(() => {
-            if (!iframe.classList.contains('loaded')) {
-                console.error('⏱️ Timeout: Carga demasiado lenta');
-                showError();
-            }
-        }, MAX_LOAD_TIME);
-
-        iframe.addEventListener('load', function() {
-            clearTimeout(loadTimeout);
-            console.log('✅ App cargada');
-            
-            setTimeout(() => {
-                loadingScreen.classList.add('hidden');
-                iframe.classList.add('loaded');
-            }, 1200);
-        });
-
-        iframe.addEventListener('error', function() {
-            clearTimeout(loadTimeout);
-            console.error('❌ Error de carga');
+    loadTimeout = setTimeout(() => {
+        if (!iframe.classList.contains('loaded')) {
+            console.error('⏱️ Timeout: Carga demasiado lenta');
             showError();
-        });
+        }
+    }, MAX_LOAD_TIME);
 
-        function showError() {
+    iframe.addEventListener('load', function() {
+        clearTimeout(loadTimeout);
+        console.log('✅ App cargada');
+        
+        setTimeout(() => {
             loadingScreen.classList.add('hidden');
-            errorScreen.classList.add('show');
-        }
+            iframe.classList.add('loaded');
+        }, 1200);
+    });
 
-        // ============================================
-        // PWA INSTALL PROMPT - iOS + ANDROID
-        // ============================================
+    iframe.addEventListener('error', function() {
+        clearTimeout(loadTimeout);
+        console.error('❌ Error de carga');
+        showError();
+    });
 
-        // Detectar plataforma
-        function isIOS() {
-            const userAgent = window.navigator.userAgent.toLowerCase();
-            return /iphone|ipad|ipod/.test(userAgent);
-        }
+    function showError() {
+        loadingScreen.classList.add('hidden');
+        errorScreen.classList.add('show');
+    }
 
-        function isInStandaloneMode() {
-            // Método 1: Safari específico
-            if (window.navigator.standalone === true) return true;
-            
-            // Método 2: Standard
-            if (window.matchMedia('(display-mode: standalone)').matches) return true;
-            
-            // Método 3: Android
-            if (document.referrer.includes('android-app://')) return true;
-            
-            // Método 4: Verificar si URL cambió (PWA instalada)
-            if (window.location.href.includes('?utm_source=homescreen')) return true;
-            
-            // Método 5: Flag manual
-            if (localStorage.getItem('pwa-installed') === 'true') return true;
-            
+    // ============================================
+    // PWA INSTALL PROMPT - iOS + ANDROID
+    // ============================================
+
+    // Detectar plataforma
+    function isIOS() {
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        return /iphone|ipad|ipod/.test(userAgent);
+    }
+
+    function isInStandaloneMode() {
+        if (window.navigator.standalone === true) return true;
+        if (window.matchMedia('(display-mode: standalone)').matches) return true;
+        if (document.referrer.includes('android-app://')) return true;
+        if (window.location.href.includes('?utm_source=homescreen')) return true;
+        if (localStorage.getItem('pwa-installed') === 'true') return true;
+        return false;
+    }
+
+    // Variables
+    let deferredPrompt;
+    const installBannerAndroid = document.getElementById('install-banner-android');
+    const installBannerIOS = document.getElementById('install-banner-ios');
+    const installButton = document.getElementById('install-button');
+    const closeBannerAndroid = document.getElementById('close-banner-android');
+    const closeBannerIOS = document.getElementById('close-banner-ios');
+    const alreadyInstalledBtn = document.getElementById('already-installed');
+
+    // Verificar si el banner fue cerrado
+    function wasBannerDismissed() {
+        const dismissExpiry = localStorage.getItem('install-banner-dismissed');
+        if (!dismissExpiry) return false;
+        
+        const expiry = parseInt(dismissExpiry);
+        if (Date.now() > expiry) {
+            localStorage.removeItem('install-banner-dismissed');
             return false;
         }
+        return true;
+    }
 
-        // Variables
-        let deferredPrompt;
-        const installBannerAndroid = document.getElementById('install-banner-android');
-        const installBannerIOS = document.getElementById('install-banner-ios');
-        const installButton = document.getElementById('install-button');
-        const closeBannerAndroid = document.getElementById('close-banner-android');
-        const closeBannerIOS = document.getElementById('close-banner-ios');
-
-        // Verificar si el banner fue cerrado
-        function wasBannerDismissed() {
-            const dismissExpiry = localStorage.getItem('install-banner-dismissed');
-            if (!dismissExpiry) return false;
-            
-            const expiry = parseInt(dismissExpiry);
-            if (Date.now() > expiry) {
-                localStorage.removeItem('install-banner-dismissed');
-                return false;
-            }
-            return true;
+    // Mostrar banner correspondiente
+    function showInstallBanner() {
+        if (localStorage.getItem('pwa-installed') === 'true' || 
+            localStorage.getItem('app-installed') === 'true') {
+            console.log('✅ App ya instalada (flag localStorage)');
+            return;
         }
-
-        // Mostrar banner correspondiente
-        // Mostrar banner correspondiente
-        function showInstallBanner() {
-            // 🔧 VERIFICACIÓN #1: Flag manual (MÁS CONFIABLE)
-            if (localStorage.getItem('pwa-installed') === 'true' || 
-                localStorage.getItem('app-installed') === 'true') {
-                console.log('✅ App ya instalada (flag localStorage)');
-                return;
-            }
-            
-            // 🔧 VERIFICACIÓN #2: Standalone
-            if (isInStandaloneMode()) {
-                console.log('✅ App ya instalada (standalone mode)');
-                localStorage.setItem('pwa-installed', 'true');
-                return;
-            }
-            
-            // 🔧 VERIFICACIÓN #3: Banner cerrado recientemente
-            if (wasBannerDismissed()) {
-                console.log('⏸️ Banner cerrado recientemente');
-                return;
-            }
-            
-            setTimeout(() => {
-                if (isIOS()) {
-                    installBannerIOS.classList.add('show');
-                    console.log('📱 Banner iOS mostrado');
-                } else if (deferredPrompt) {
-                    installBannerAndroid.classList.add('show');
-                    console.log('🤖 Banner Android mostrado');
-                }
-            }, 5000); // 5 segundos (reducido de 10)
+        
+        if (isInStandaloneMode()) {
+            console.log('✅ App ya instalada (standalone mode)');
+            localStorage.setItem('pwa-installed', 'true');
+            return;
         }
-
-        // ANDROID - Detectar cuando la app es instalable
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            
-            // No mostrar banner Android si es iOS
+        
+        if (wasBannerDismissed()) {
+            console.log('⏸️ Banner cerrado recientemente');
+            return;
+        }
+        
+        setTimeout(() => {
             if (isIOS()) {
-                console.log('⚠️ Ignorando prompt Android en iOS');
+                installBannerIOS.classList.add('show');
+                console.log('📱 Banner iOS mostrado');
+            } else if (deferredPrompt) {
+                installBannerAndroid.classList.add('show');
+                console.log('🤖 Banner Android mostrado');
+            }
+        }, 5000);
+    }
+
+    // ANDROID - Detectar cuando la app es instalable
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        if (isIOS()) {
+            console.log('⚠️ Ignorando prompt Android en iOS');
+            return;
+        }
+        
+        showInstallBanner();
+    });
+
+    // ANDROID - Botón Instalar
+    if (installButton) {
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) {
+                console.log('⚠️ No hay prompt disponible');
                 return;
             }
             
-            // Mostrar banner si no es iOS
-            if (!isIOS()) {
-                showInstallBanner();
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            console.log(`Usuario ${outcome === 'accepted' ? 'aceptó' : 'rechazó'} instalar`);
+            
+            deferredPrompt = null;
+            installBannerAndroid.classList.remove('show');
+            
+            if (outcome === 'accepted') {
+                localStorage.setItem('app-installed', 'true');
             }
         });
+    }
 
-        // ANDROID - Botón Instalar
-        if (installButton) {
-            installButton.addEventListener('click', async () => {
-                if (!deferredPrompt) {
-                    console.log('⚠️ No hay prompt disponible');
-                    return;
-                }
-                
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                
-                console.log(`Usuario ${outcome === 'accepted' ? 'aceptó' : 'rechazó'} instalar`);
-                
-                deferredPrompt = null;
-                installBannerAndroid.classList.remove('show');
-                
-                if (outcome === 'accepted') {
-                    localStorage.setItem('app-installed', 'true');
-                }
-            });
-        }
+    // ANDROID - Cerrar banner
+    if (closeBannerAndroid) {
+        closeBannerAndroid.addEventListener('click', () => {
+            installBannerAndroid.classList.remove('show');
+            
+            const expiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
+            localStorage.setItem('install-banner-dismissed', expiry);
+        });
+    }
 
-        // ANDROID - Cerrar banner
-        if (closeBannerAndroid) {
-            closeBannerAndroid.addEventListener('click', () => {
-                installBannerAndroid.classList.remove('show');
-                
-                const expiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 días
-                localStorage.setItem('install-banner-dismissed', expiry);
-            });
-        }
+    // iOS - Cerrar banner
+    if (closeBannerIOS) {
+        closeBannerIOS.addEventListener('click', () => {
+            installBannerIOS.classList.remove('show');
+            
+            const expiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
+            localStorage.setItem('install-banner-dismissed', expiry);
+        });
+    }
 
-        // iOS - Cerrar banner
-        if (closeBannerIOS) {
-            closeBannerIOS.addEventListener('click', () => {
-                // iOS - Botón "Ya está instalada"
-            const alreadyInstalledBtn = document.getElementById('already-installed');
-            if (alreadyInstalledBtn) {
-                alreadyInstalledBtn.addEventListener('click', () => {
-                    installBannerIOS.classList.remove('show');
-                    
-                    // Marcar como instalada PERMANENTEMENTE
-                    localStorage.setItem('pwa-installed', 'true');
-                    localStorage.setItem('app-installed', 'true');
-                    
-                    console.log('✅ Usuario confirmó que la app ya está instalada');
-                });
-            }
+    // 🔧 FIX: Botón "Ya está instalada" SEPARADO
+    if (alreadyInstalledBtn) {
+        alreadyInstalledBtn.addEventListener('click', () => {
+            installBannerIOS.classList.remove('show');
+            
+            // Marcar como instalada PERMANENTEMENTE
+            localStorage.setItem('pwa-installed', 'true');
+            localStorage.setItem('app-installed', 'true');
+            
+            console.log('✅ Usuario confirmó que la app ya está instalada');
+        });
+    }
+
+    // iOS - Cerrar al tocar el backdrop
+    if (installBannerIOS) {
+        installBannerIOS.addEventListener('click', (e) => {
+            if (e.target === installBannerIOS) {
                 installBannerIOS.classList.remove('show');
                 
-                const expiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 días
+                const expiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
                 localStorage.setItem('install-banner-dismissed', expiry);
-            });
-        }
-
-        // iOS - Cerrar al tocar el backdrop
-        if (installBannerIOS) {
-            installBannerIOS.addEventListener('click', (e) => {
-                if (e.target === installBannerIOS) {
-                    installBannerIOS.classList.remove('show');
-                    
-                    const expiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
-                    localStorage.setItem('install-banner-dismissed', expiry);
-                }
-            });
-        }
-
-        // iOS - Mostrar banner SOLO si NO está instalada
-        if (isIOS()) {
-            setTimeout(() => {
-                // Triple verificación
-                const installed = localStorage.getItem('pwa-installed') === 'true' || 
-                                 localStorage.getItem('app-installed') === 'true' ||
-                                 window.navigator.standalone === true ||
-                                 window.matchMedia('(display-mode: standalone)').matches;
-                
-                if (!installed && !wasBannerDismissed()) {
-                    // Remover display:none y mostrar
-                    installBannerIOS.style.removeProperty('display');
-                    setTimeout(() => {
-                        installBannerIOS.classList.add('show');
-                        console.log('📱 Banner iOS mostrado');
-                    }, 500);
-                } else {
-                    console.log('✅ App ya instalada - Banner NO mostrado');
-                }
-            }, 8000); // Esperar 8 segundos
-        }
-
-        // Detectar instalación exitosa
-        window.addEventListener('appinstalled', () => {
-            console.log('✅ App instalada exitosamente');
-            installBannerAndroid.classList.remove('show');
-            installBannerIOS.classList.remove('show');
-            localStorage.setItem('app-installed', 'true');
-        });
-
-        // Debug info
-        console.log('🔍 Plataforma:', isIOS() ? 'iOS' : 'Android/Other');
-        console.log('🔍 Standalone:', isInStandaloneMode());
-        console.log('🔍 Banner dismissed:', wasBannerDismissed());
-
-        // ============================================
-        // OPTIMIZACIONES MÓVILES
-        // ============================================
-        
-        document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
-        document.addEventListener('gesturestart', e => e.preventDefault());
-
-        let touchStartY = 0;
-        document.addEventListener('touchstart', e => {
-            touchStartY = e.touches[0].clientY;
-        }, { passive: true });
-
-        document.addEventListener('touchmove', e => {
-            const touchY = e.touches[0].clientY;
-            const touchDiff = touchY - touchStartY;
-            
-            if (touchDiff > 0 && window.scrollY === 0) {
-                e.preventDefault();
             }
-        }, { passive: false });
-
-        window.addEventListener('resize', () => {
-            document.documentElement.style.height = window.innerHeight + 'px';
         });
-    </script>
+    }
+
+    // 🔧 FIX CRÍTICO: iOS - Mostrar banner SOLO si NO está instalada
+    if (isIOS()) {
+        setTimeout(() => {
+            const installed = localStorage.getItem('pwa-installed') === 'true' || 
+                             localStorage.getItem('app-installed') === 'true' ||
+                             window.navigator.standalone === true ||
+                             window.matchMedia('(display-mode: standalone)').matches;
+            
+            if (!installed && !wasBannerDismissed()) {
+                // 🔧 FIX: Usar setProperty en lugar de removeProperty
+                installBannerIOS.style.setProperty('display', 'block', 'important');
+                setTimeout(() => {
+                    installBannerIOS.classList.add('show');
+                    console.log('📱 Banner iOS mostrado');
+                }, 500);
+            } else {
+                console.log('✅ App ya instalada - Banner NO mostrado');
+            }
+        }, 8000);
+    }
+
+    // Detectar instalación exitosa
+    window.addEventListener('appinstalled', () => {
+        console.log('✅ App instalada exitosamente');
+        installBannerAndroid.classList.remove('show');
+        installBannerIOS.classList.remove('show');
+        localStorage.setItem('app-installed', 'true');
+    });
+
+    // Debug info
+    console.log('🔍 Plataforma:', isIOS() ? 'iOS' : 'Android/Other');
+    console.log('🔍 Standalone:', isInStandaloneMode());
+    console.log('🔍 Banner dismissed:', wasBannerDismissed());
+
+    // ============================================
+    // OPTIMIZACIONES MÓVILES
+    // ============================================
+    
+    document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
+    document.addEventListener('gesturestart', e => e.preventDefault());
+
+    let touchStartY = 0;
+    document.addEventListener('touchstart', e => {
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    document.addEventListener('touchmove', e => {
+        const touchY = e.touches[0].clientY;
+        const touchDiff = touchY - touchStartY;
+        
+        if (touchDiff > 0 && window.scrollY === 0) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    window.addEventListener('resize', () => {
+        document.documentElement.style.height = window.innerHeight + 'px';
+    });
+</script>
 </body>
 </html>
