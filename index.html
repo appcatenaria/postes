@@ -15,226 +15,483 @@
     <meta name="theme-color" content="#6200EE">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <!-- CSS del bloque anterior aquí -->
     <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    html, body {
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        position: fixed;
-        background-color: #6200EE;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-        overscroll-behavior: none;
-        -webkit-overflow-scrolling: touch;
-        touch-action: none;
-    }
-
-    #app-wrapper {
-        width: 100vw;
-        height: 100vh;
-        height: 100dvh;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        background: linear-gradient(135deg, #6200EE 0%, #7c4dff 50%, #9575cd 100%);
-    }
-
-    iframe {
-        width: 100%;
-        height: 100%;
-        border: none;
-        position: absolute;
-        top: 0;
-        left: 0;
-        opacity: 0;
-        transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        overflow: hidden;
-    }
-
-    iframe.loaded {
-        opacity: 1;
-    }
-
-    /* LOADING SCREEN MINIMALISTA */
-    #loading-screen {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, #6200EE 0%, #7c4dff 50%, #9575cd 100%);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    #loading-screen.hidden {
-        opacity: 0;
-        transform: scale(0.95);
-        pointer-events: none;
-    }
-
-    /* Logo App */
-    .app-logo {
-        width: 100px;
-        height: 100px;
-        background: white;
-        border-radius: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 50px;
-        margin-bottom: 40px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-        animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-    }
-
-    /* Dots loader */
-    .dots-loader {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 24px;
-    }
-
-    .dot {
-        width: 10px;
-        height: 10px;
-        background: white;
-        border-radius: 50%;
-        animation: bounce 1.4s infinite ease-in-out;
-    }
-
-    .dot:nth-child(1) { animation-delay: -0.32s; }
-    .dot:nth-child(2) { animation-delay: -0.16s; }
-    .dot:nth-child(3) { animation-delay: 0s; }
-
-    @keyframes bounce {
-        0%, 80%, 100% { 
-            transform: scale(0.6);
-            opacity: 0.4;
+        /* ============================================
+           RESET ABSOLUTO
+        ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        40% { 
-            transform: scale(1.2);
-            opacity: 1;
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            background-color: #6200EE;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+            touch-action: none;
         }
-    }
 
-    .loading-text {
-        color: white;
-        font-size: 15px;
-        font-weight: 600;
-        letter-spacing: 0.3px;
-        opacity: 0.95;
-    }
+        /* ============================================
+           CONTAINER FULLSCREEN
+        ============================================ */
+        #app-wrapper {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #6200EE 0%, #7c4dff 50%, #9575cd 100%);
+        }
 
-    .app-version {
-        position: absolute;
-        bottom: calc(30px + env(safe-area-inset-bottom, 20px));
-        color: rgba(255,255,255,0.6);
-        font-size: 11px;
-        font-weight: 500;
-        letter-spacing: 1px;
-    }
-
-    /* ERROR SCREEN */
-    #error-screen {
-        display: none;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
-        color: white;
-        padding: 40px;
-        text-align: center;
-        z-index: 10000;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-    #error-screen.show {
-        display: flex;
-        animation: fadeIn 0.3s ease-out;
-    }
-
-    .error-icon {
-        width: 80px;
-        height: 80px;
-        background: rgba(255,255,255,0.2);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 40px;
-        margin-bottom: 24px;
-    }
-
-    .error-title {
-        font-size: 22px;
-        font-weight: 700;
-        margin-bottom: 12px;
-    }
-
-    .error-message {
-        font-size: 15px;
-        opacity: 0.9;
-        line-height: 1.6;
-        margin-bottom: 32px;
-        max-width: 300px;
-    }
-
-    .retry-button {
-        background: white;
-        color: #d32f2f;
-        border: none;
-        padding: 16px 40px;
-        border-radius: 50px;
-        font-weight: 700;
-        font-size: 15px;
-        cursor: pointer;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-        transition: all 0.2s;
-    }
-
-    .retry-button:active {
-        transform: scale(0.95);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-
-    @keyframes fadeIn {
-        from {
+        /* ============================================
+           IFRAME FULLSCREEN
+        ============================================ */
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            position: absolute;
+            top: 0;
+            left: 0;
             opacity: 0;
-            transform: scale(0.9);
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
         }
-        to {
+
+        iframe.loaded {
             opacity: 1;
-            transform: scale(1);
         }
-    }
-</style>
+
+        /* ============================================
+           LOADING SCREEN MINIMALISTA
+        ============================================ */
+        #loading-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #6200EE 0%, #7c4dff 50%, #9575cd 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #loading-screen.hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+
+        .app-logo {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .dots-loader {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        .dot:nth-child(3) { animation-delay: 0s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { 
+                transform: scale(0.6);
+                opacity: 0.4;
+            }
+            40% { 
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            opacity: 0.95;
+        }
+
+        .app-version {
+            position: absolute;
+            bottom: calc(30px + env(safe-area-inset-bottom, 20px));
+            color: rgba(255,255,255,0.6);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        /* ============================================
+           ERROR SCREEN
+        ============================================ */
+        #error-screen {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            z-index: 10000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #error-screen.show {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .error-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 24px;
+        }
+
+        .error-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .error-message {
+            font-size: 15px;
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 32px;
+            max-width: 300px;
+        }
+
+        .retry-button {
+            background: white;
+            color: #d32f2f;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+        }
+
+        .retry-button:active {
+            transform: scale(0.95);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ============================================
+           BANNER INSTALAR - ANDROID/CHROME
+        ============================================ */
+        #install-banner-android {
+            position: fixed;
+            bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+            left: 50%;
+            transform: translateX(-50%) translateY(150%);
+            width: calc(100% - 32px);
+            max-width: 400px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 10001;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #install-banner-android.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .install-content {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .install-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #6200EE 0%, #7c4dff 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .install-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .install-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1C1C1E;
+            margin-bottom: 2px;
+        }
+
+        .install-subtitle {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .install-button {
+            background: #6200EE;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .install-button:active {
+            transform: scale(0.95);
+            background: #7c4dff;
+        }
+
+        .close-banner {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            background: transparent;
+            border: none;
+            color: #999;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .close-banner:active {
+            background: #f0f0f0;
+        }
+
+        /* ============================================
+           BANNER INSTALAR - iOS/SAFARI
+        ============================================ */
+        #install-banner-ios {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            transform: translateY(100%);
+            background: white;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.2);
+            z-index: 10001;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+
+        #install-banner-ios.show {
+            transform: translateY(0);
+        }
+
+        .install-content-ios {
+            padding: 20px;
+        }
+
+        .ios-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .ios-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .ios-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: #F2F2F7;
+            padding: 14px;
+            border-radius: 12px;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: #6200EE;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            flex: 1;
+            font-size: 14px;
+            color: #1C1C1E;
+            line-height: 1.5;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .step-text strong {
+            color: #6200EE;
+        }
+
+        .share-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: #007AFF;
+            color: white;
+            border-radius: 8px;
+            margin-left: 4px;
+        }
+
+        .share-icon svg {
+            stroke: white;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .add-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: #34C759;
+            color: white;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-left: 4px;
+        }
+
+        #install-banner-ios::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        #install-banner-ios.show::before {
+            opacity: 1;
+        }
+
+        /* Dark mode */
+        body.dark-mode #install-banner-android,
+        body.dark-mode #install-banner-ios {
+            background: #1E1E1E;
+            border: 1px solid #333;
+        }
+
+        body.dark-mode .install-title {
+            color: #E0E0E0;
+        }
+
+        body.dark-mode .install-subtitle {
+            color: #A0A0A0;
+        }
+
+        body.dark-mode .ios-step {
+            background: #2C2C2C;
+        }
+
+        body.dark-mode .step-text {
+            color: #E0E0E0;
+        }
+    </style>
 </head>
 <body>
     <div id="app-wrapper">
         
-        <!-- Loading Screen MINIMALISTA -->
+        <!-- Loading Screen -->
         <div id="loading-screen">
             <div class="app-logo">
                 🚄
@@ -261,6 +518,54 @@
             <button class="retry-button" onclick="location.reload()">Reintentar</button>
         </div>
 
+        <!-- Banner Instalar - ANDROID/CHROME -->
+        <div id="install-banner-android">
+            <div class="install-content">
+                <div class="install-icon">🚄</div>
+                <div class="install-info">
+                    <div class="install-title">Instalar Aplicación</div>
+                    <div class="install-subtitle">Acceso rápido desde tu pantalla</div>
+                </div>
+                <button class="install-button" id="install-button">Instalar</button>
+                <button class="close-banner" id="close-banner-android">✕</button>
+            </div>
+        </div>
+
+        <!-- Banner Instalar - iOS/SAFARI -->
+        <div id="install-banner-ios">
+            <div class="install-content-ios">
+                <div class="ios-header">
+                    <div class="install-icon">🚄</div>
+                    <div class="install-info">
+                        <div class="install-title">Instalar en iPhone</div>
+                        <div class="install-subtitle">Añadir a pantalla de inicio</div>
+                    </div>
+                    <button class="close-banner" id="close-banner-ios">✕</button>
+                </div>
+                
+                <div class="ios-steps">
+                    <div class="ios-step">
+                        <div class="step-number">1</div>
+                        <div class="step-text">
+                            Pulsa el botón <strong>Compartir</strong>
+                            <div class="share-icon">
+                                <svg width="20" height="24" viewBox="0 0 20 24" fill="currentColor">
+                                    <path d="M10 0L10 15M10 0L6 4M10 0L14 4M3 8v13c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V8"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ios-step">
+                        <div class="step-number">2</div>
+                        <div class="step-text">
+                            Selecciona <strong>"Añadir a pantalla de inicio"</strong>
+                            <div class="add-icon">➕</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Iframe Principal -->
         <iframe 
             id="app-iframe"
@@ -273,6 +578,9 @@
     </div>
 
     <script>
+        // ============================================
+        // GESTIÓN DE CARGA DEL IFRAME
+        // ============================================
         const iframe = document.getElementById('app-iframe');
         const loadingScreen = document.getElementById('loading-screen');
         const errorScreen = document.getElementById('error-screen');
@@ -308,6 +616,9 @@
             errorScreen.classList.add('show');
         }
 
+        // ============================================
+        // SERVICE WORKER (PWA)
+        // ============================================
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
@@ -316,6 +627,157 @@
             });
         }
 
+        // ============================================
+        // PWA INSTALL PROMPT - iOS + ANDROID
+        // ============================================
+
+        // Detectar plataforma
+        function isIOS() {
+            const userAgent = window.navigator.userAgent.toLowerCase();
+            return /iphone|ipad|ipod/.test(userAgent);
+        }
+
+        function isInStandaloneMode() {
+            return (window.matchMedia('(display-mode: standalone)').matches) || 
+                   (window.navigator.standalone) || 
+                   document.referrer.includes('android-app://');
+        }
+
+        // Variables
+        let deferredPrompt;
+        const installBannerAndroid = document.getElementById('install-banner-android');
+        const installBannerIOS = document.getElementById('install-banner-ios');
+        const installButton = document.getElementById('install-button');
+        const closeBannerAndroid = document.getElementById('close-banner-android');
+        const closeBannerIOS = document.getElementById('close-banner-ios');
+
+        // Verificar si el banner fue cerrado
+        function wasBannerDismissed() {
+            const dismissExpiry = localStorage.getItem('install-banner-dismissed');
+            if (!dismissExpiry) return false;
+            
+            const expiry = parseInt(dismissExpiry);
+            if (Date.now() > expiry) {
+                localStorage.removeItem('install-banner-dismissed');
+                return false;
+            }
+            return true;
+        }
+
+        // Mostrar banner correspondiente
+        function showInstallBanner() {
+            // No mostrar si ya está instalada o en standalone
+            if (isInStandaloneMode() || localStorage.getItem('app-installed')) {
+                return;
+            }
+            
+            // No mostrar si fue cerrado recientemente
+            if (wasBannerDismissed()) {
+                return;
+            }
+            
+            setTimeout(() => {
+                if (isIOS()) {
+                    // iOS - Mostrar instrucciones manuales
+                    installBannerIOS.classList.add('show');
+                    console.log('📱 Banner iOS mostrado');
+                } else if (deferredPrompt) {
+                    // Android/Chrome - Mostrar botón instalar
+                    installBannerAndroid.classList.add('show');
+                    console.log('🤖 Banner Android mostrado');
+                }
+            }, 3000); // 3 segundos después de cargar
+        }
+
+        // ANDROID - Detectar cuando la app es instalable
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            console.log('✅ App lista para instalar (Android)');
+            
+            // Mostrar banner si no es iOS
+            if (!isIOS()) {
+                showInstallBanner();
+            }
+        });
+
+        // ANDROID - Botón Instalar
+        if (installButton) {
+            installButton.addEventListener('click', async () => {
+                if (!deferredPrompt) {
+                    console.log('⚠️ No hay prompt disponible');
+                    return;
+                }
+                
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                console.log(`Usuario ${outcome === 'accepted' ? 'aceptó' : 'rechazó'} instalar`);
+                
+                deferredPrompt = null;
+                installBannerAndroid.classList.remove('show');
+                
+                if (outcome === 'accepted') {
+                    localStorage.setItem('app-installed', 'true');
+                }
+            });
+        }
+
+        // ANDROID - Cerrar banner
+        if (closeBannerAndroid) {
+            closeBannerAndroid.addEventListener('click', () => {
+                installBannerAndroid.classList.remove('show');
+                
+                const expiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 días
+                localStorage.setItem('install-banner-dismissed', expiry);
+            });
+        }
+
+        // iOS - Cerrar banner
+        if (closeBannerIOS) {
+            closeBannerIOS.addEventListener('click', () => {
+                installBannerIOS.classList.remove('show');
+                
+                const expiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 días
+                localStorage.setItem('install-banner-dismissed', expiry);
+            });
+        }
+
+        // iOS - Cerrar al tocar el backdrop
+        if (installBannerIOS) {
+            installBannerIOS.addEventListener('click', (e) => {
+                if (e.target === installBannerIOS) {
+                    installBannerIOS.classList.remove('show');
+                    
+                    const expiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
+                    localStorage.setItem('install-banner-dismissed', expiry);
+                }
+            });
+        }
+
+        // iOS - Mostrar banner si es iOS y no está instalada
+        if (isIOS() && !isInStandaloneMode()) {
+            showInstallBanner();
+        }
+
+        // Detectar instalación exitosa
+        window.addEventListener('appinstalled', () => {
+            console.log('✅ App instalada exitosamente');
+            installBannerAndroid.classList.remove('show');
+            installBannerIOS.classList.remove('show');
+            localStorage.setItem('app-installed', 'true');
+        });
+
+        // Debug info
+        console.log('🔍 Plataforma:', isIOS() ? 'iOS' : 'Android/Other');
+        console.log('🔍 Standalone:', isInStandaloneMode());
+        console.log('🔍 Banner dismissed:', wasBannerDismissed());
+
+        // ============================================
+        // OPTIMIZACIONES MÓVILES
+        // ============================================
+        
         document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
         document.addEventListener('gesturestart', e => e.preventDefault());
 
