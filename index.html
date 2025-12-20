@@ -15,289 +15,231 @@
     <meta name="theme-color" content="#6200EE">
     <meta name="mobile-web-app-capable" content="yes">
 
+    <!-- CSS del bloque anterior aquí -->
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            position: fixed;
-            background-color: #6200EE;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-            overscroll-behavior: none;
-            -webkit-overflow-scrolling: touch;
-            touch-action: none;
-        }
+    html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        position: fixed;
+        background-color: #6200EE;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        overscroll-behavior: none;
+        -webkit-overflow-scrolling: touch;
+        touch-action: none;
+    }
 
-        #app-wrapper {
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            background: linear-gradient(135deg, #6200EE 0%, #7c4dff 50%, #9575cd 100%);
-        }
+    #app-wrapper {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(135deg, #6200EE 0%, #7c4dff 50%, #9575cd 100%);
+    }
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            opacity: 0;
-            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-        }
+    iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+    }
 
-        iframe.loaded {
+    iframe.loaded {
+        opacity: 1;
+    }
+
+    /* LOADING SCREEN MINIMALISTA */
+    #loading-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #6200EE 0%, #7c4dff 50%, #9575cd 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #loading-screen.hidden {
+        opacity: 0;
+        transform: scale(0.95);
+        pointer-events: none;
+    }
+
+    /* Logo App */
+    .app-logo {
+        width: 100px;
+        height: 100px;
+        background: white;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 50px;
+        margin-bottom: 40px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    /* Dots loader */
+    .dots-loader {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 24px;
+    }
+
+    .dot {
+        width: 10px;
+        height: 10px;
+        background: white;
+        border-radius: 50%;
+        animation: bounce 1.4s infinite ease-in-out;
+    }
+
+    .dot:nth-child(1) { animation-delay: -0.32s; }
+    .dot:nth-child(2) { animation-delay: -0.16s; }
+    .dot:nth-child(3) { animation-delay: 0s; }
+
+    @keyframes bounce {
+        0%, 80%, 100% { 
+            transform: scale(0.6);
+            opacity: 0.4;
+        }
+        40% { 
+            transform: scale(1.2);
             opacity: 1;
         }
+    }
 
-        /* ============================================
-           LOADING SCREEN MODERNO (iOS/Android style)
-        ============================================ */
-        #loading-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #6200EE 0%, #7c4dff 50%, #9575cd 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease-out, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+    .loading-text {
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        opacity: 0.95;
+    }
 
-        #loading-screen.hidden {
+    .app-version {
+        position: absolute;
+        bottom: calc(30px + env(safe-area-inset-bottom, 20px));
+        color: rgba(255,255,255,0.6);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 1px;
+    }
+
+    /* ERROR SCREEN */
+    #error-screen {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+        color: white;
+        padding: 40px;
+        text-align: center;
+        z-index: 10000;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #error-screen.show {
+        display: flex;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .error-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        margin-bottom: 24px;
+    }
+
+    .error-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .error-message {
+        font-size: 15px;
+        opacity: 0.9;
+        line-height: 1.6;
+        margin-bottom: 32px;
+        max-width: 300px;
+    }
+
+    .retry-button {
+        background: white;
+        color: #d32f2f;
+        border: none;
+        padding: 16px 40px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        transition: all 0.2s;
+    }
+
+    .retry-button:active {
+        transform: scale(0.95);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    @keyframes fadeIn {
+        from {
             opacity: 0;
-            transform: scale(0.95);
-            pointer-events: none;
+            transform: scale(0.9);
         }
-
-        /* Logo App con animación */
-        .app-logo {
-            width: 100px;
-            height: 100px;
-            background: white;
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 50px;
-            margin-bottom: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-            animation: float 3s ease-in-out infinite;
+        to {
+            opacity: 1;
+            transform: scale(1);
         }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        /* Skeleton Loader iOS/Android */
-        .skeleton-loader {
-            width: 280px;
-            height: 8px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-            margin-bottom: 16px;
-        }
-
-        .skeleton-loader::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            100% { left: 100%; }
-        }
-
-        /* Dots loader moderno */
-        .dots-loader {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            background: white;
-            border-radius: 50%;
-            animation: bounce 1.4s infinite ease-in-out;
-        }
-
-        .dot:nth-child(1) { animation-delay: -0.32s; }
-        .dot:nth-child(2) { animation-delay: -0.16s; }
-        .dot:nth-child(3) { animation-delay: 0s; }
-
-        @keyframes bounce {
-            0%, 80%, 100% { 
-                transform: scale(0.8);
-                opacity: 0.5;
-            }
-            40% { 
-                transform: scale(1.2);
-                opacity: 1;
-            }
-        }
-
-        .loading-text {
-            color: white;
-            font-size: 15px;
-            font-weight: 600;
-            margin-top: 24px;
-            letter-spacing: 0.3px;
-            opacity: 0.95;
-        }
-
-        .app-version {
-            position: absolute;
-            bottom: calc(30px + env(safe-area-inset-bottom, 20px));
-            color: rgba(255,255,255,0.6);
-            font-size: 11px;
-            font-weight: 500;
-            letter-spacing: 1px;
-        }
-
-        /* ============================================
-           ERROR SCREEN MEJORADO
-        ============================================ */
-        #error-screen {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-            z-index: 10000;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #error-screen.show {
-            display: flex;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .error-icon {
-            width: 80px;
-            height: 80px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            margin-bottom: 24px;
-        }
-
-        .error-title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        .error-message {
-            font-size: 15px;
-            opacity: 0.9;
-            line-height: 1.6;
-            margin-bottom: 32px;
-            max-width: 300px;
-        }
-
-        .retry-button {
-            background: white;
-            color: #d32f2f;
-            border: none;
-            padding: 16px 40px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-            transition: all 0.2s;
-        }
-
-        .retry-button:active {
-            transform: scale(0.95);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        /* Animación de entrada */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        /* Progress bar tipo iOS */
-        .progress-bar {
-            width: 280px;
-            height: 3px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-top: 24px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: white;
-            width: 0%;
-            animation: progress 8s ease-in-out infinite;
-        }
-
-        @keyframes progress {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 100%; }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
     <div id="app-wrapper">
         
-        <!-- Loading Screen Renovado -->
+        <!-- Loading Screen MINIMALISTA -->
         <div id="loading-screen">
             <div class="app-logo">
                 🚄
             </div>
             
-            <!-- Skeleton loader -->
-            <div class="skeleton-loader"></div>
-            
-            <!-- Dots loader -->
             <div class="dots-loader">
                 <div class="dot"></div>
                 <div class="dot"></div>
@@ -305,11 +247,6 @@
             </div>
             
             <div class="loading-text">Cargando aplicación...</div>
-            
-            <!-- Progress bar -->
-            <div class="progress-bar">
-                <div class="progress-fill"></div>
-            </div>
             
             <div class="app-version">VERSIÓN 2.5</div>
         </div>
@@ -371,7 +308,6 @@
             errorScreen.classList.add('show');
         }
 
-        // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
@@ -380,11 +316,9 @@
             });
         }
 
-        // Evitar zoom
         document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
         document.addEventListener('gesturestart', e => e.preventDefault());
 
-        // Prevenir pull-to-refresh
         let touchStartY = 0;
         document.addEventListener('touchstart', e => {
             touchStartY = e.touches[0].clientY;
@@ -399,7 +333,6 @@
             }
         }, { passive: false });
 
-        // Ajustar altura en resize
         window.addEventListener('resize', () => {
             document.documentElement.style.height = window.innerHeight + 'px';
         });
