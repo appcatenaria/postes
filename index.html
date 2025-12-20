@@ -617,17 +617,6 @@
         }
 
         // ============================================
-        // SERVICE WORKER (PWA)
-        // ============================================
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(reg => console.log('✅ SW registrado'))
-                    .catch(err => console.log('⚠️ SW error:', err));
-            });
-        }
-
-        // ============================================
         // PWA INSTALL PROMPT - iOS + ANDROID
         // ============================================
 
@@ -638,9 +627,22 @@
         }
 
         function isInStandaloneMode() {
-            return (window.matchMedia('(display-mode: standalone)').matches) || 
-                   (window.navigator.standalone) || 
-                   document.referrer.includes('android-app://');
+            // Método 1: Safari específico
+            if (window.navigator.standalone === true) return true;
+            
+            // Método 2: Standard
+            if (window.matchMedia('(display-mode: standalone)').matches) return true;
+            
+            // Método 3: Android
+            if (document.referrer.includes('android-app://')) return true;
+            
+            // Método 4: Verificar si URL cambió (PWA instalada)
+            if (window.location.href.includes('?utm_source=homescreen')) return true;
+            
+            // Método 5: Flag manual
+            if (localStorage.getItem('pwa-installed') === 'true') return true;
+            
+            return false;
         }
 
         // Variables
@@ -686,7 +688,7 @@
                     installBannerAndroid.classList.add('show');
                     console.log('🤖 Banner Android mostrado');
                 }
-            }, 3000); // 3 segundos después de cargar
+            }, 10000); // 3 segundos después de cargar
         }
 
         // ANDROID - Detectar cuando la app es instalable
