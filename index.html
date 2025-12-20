@@ -342,7 +342,6 @@
            BANNER INSTALAR - iOS/SAFARI
         ============================================ */
         #install-banner-ios {
-            display: none !important;
             position: fixed;
             bottom: 0;
             left: 0;
@@ -354,8 +353,18 @@
             z-index: 10001;
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             padding-bottom: env(safe-area-inset-bottom, 20px);
+            /* 🔧 OCULTO POR DEFECTO CON CLASE */
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
         }
-
+        
+        #install-banner-ios.visible {
+            visibility: visible;
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
         #install-banner-ios.show {
             transform: translateY(0);
         }
@@ -758,12 +767,17 @@
     }
 
     // iOS - Cerrar banner
-    if (closeBannerIOS) {
-        closeBannerIOS.addEventListener('click', () => {
+    if (alreadyInstalledBtn) {
+        alreadyInstalledBtn.addEventListener('click', () => {
             installBannerIOS.classList.remove('show');
+            setTimeout(() => {
+                installBannerIOS.classList.remove('visible'); // 🔧 AÑADIR
+            }, 400);
             
-            const expiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
-            localStorage.setItem('install-banner-dismissed', expiry);
+            localStorage.setItem('pwa-installed', 'true');
+            localStorage.setItem('app-installed', 'true');
+            
+            console.log('✅ Usuario confirmó que la app ya está instalada');
         });
     }
 
@@ -800,18 +814,20 @@
                              window.navigator.standalone === true ||
                              window.matchMedia('(display-mode: standalone)').matches;
             
-            if (!installed && !wasBannerDismissed()) {
-                // 🔧 FIX: Usar setProperty en lugar de removeProperty
-                installBannerIOS.style.setProperty('display', 'block', 'important');
-                setTimeout(() => {
-                    installBannerIOS.classList.add('show');
-                    console.log('📱 Banner iOS mostrado');
-                }, 500);
-            } else {
-                console.log('✅ App ya instalada - Banner NO mostrado');
-            }
-        }, 8000);
-    }
+        if (!installed && !wasBannerDismissed()) {
+            console.log('📱 Mostrando banner iOS...');
+            
+            // Paso 1: Hacer visible el banner
+            installBannerIOS.classList.add('visible');
+            
+            // Paso 2: Animar entrada después de un frame
+            setTimeout(() => {
+                installBannerIOS.classList.add('show');
+                console.log('✅ Banner iOS mostrado');
+            }, 50);
+        } else {
+            console.log('✅ App ya instalada - Banner NO mostrado');
+        }
 
     // Detectar instalación exitosa
     window.addEventListener('appinstalled', () => {
