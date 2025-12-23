@@ -44,9 +44,10 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            /* CAMBIO: Alineado a la izquierda */
+            /* CAMBIO 1: Todo alineado a la izquierda */
             align-items: flex-start; 
-            padding: 40px; /* Más espacio a los lados */
+            padding-left: 40px; /* Margen izquierdo elegante */
+            padding-right: 40px;
             z-index: 10;
             transition: transform 0.4s ease, opacity 0.4s ease;
         }
@@ -58,28 +59,28 @@
         }
 
         .menu-logo {
-            font-size: 60px;
+            font-size: 50px;
             background: white;
-            width: 100px; /* Un poco más pequeño para equilibrar */
+            width: 100px;
             height: 100px;
             border-radius: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            /* Al estar en flex-start, ya se queda a la izquierda */
+            /* El logo se queda a la izquierda por el flex-start del contenedor */
         }
 
         .menu-title {
             color: white;
-            font-size: 28px; /* Un poco más grande */
+            font-size: 28px;
             font-weight: 800;
             margin-bottom: 40px;
-            /* CAMBIO: Texto a la izquierda */
+            /* CAMBIO 2: Texto a la izquierda */
             text-align: left; 
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
             line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .btn {
@@ -88,7 +89,7 @@
             border: none;
             width: 100%;
             max-width: 320px;
-            padding: 20px 25px; /* Más padding lateral */
+            padding: 18px 24px;
             margin: 8px 0;
             border-radius: 16px;
             font-size: 18px;
@@ -98,14 +99,15 @@
             transition: transform 0.2s, box-shadow 0.2s;
             display: flex;
             align-items: center;
-            /* CAMBIO: Contenido del botón a la izquierda */
+            /* CAMBIO 3: Contenido del botón a la izquierda */
             justify-content: flex-start; 
             gap: 15px;
         }
 
         .btn:active {
-            transform: scale(0.96);
+            transform: scale(0.98);
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            background: #f0f0f0;
         }
 
         /* --- IFRAME --- */
@@ -158,29 +160,29 @@
         }
 
         .dots { display: flex; gap: 10px; }
-        .dot {
-            width: 10px;
-            height: 10px;
-            background: white;
-            border-radius: 50%;
-            animation: bounce 1.4s infinite ease-in-out;
-        }
+        .dot { width: 10px; height: 10px; background: white; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
         .dot:nth-child(1) { animation-delay: -0.32s; }
         .dot:nth-child(2) { animation-delay: -0.16s; }
-
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
-            40% { transform: scale(1.2); opacity: 1; }
-        }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1.2); opacity: 1; } }
 
         .text { color: white; font-size: 15px; font-weight: 600; margin-top: 24px; }
-        .version { position: absolute; bottom: 30px; color: rgba(255,255,255,0.6); font-size: 11px; letter-spacing: 1px; }
+        
+        /* Versión alineada a la izquierda también */
+        .version { 
+            position: absolute; 
+            bottom: 40px; 
+            left: 40px; /* Alineado con el padding del contenedor */
+            color: rgba(255,255,255,0.6); 
+            font-size: 11px; 
+            letter-spacing: 1px; 
+        }
 
-        /* --- BOTON VOLVER --- */
+        /* --- BOTON VOLVER (AHORA A LA IZQUIERDA) --- */
         #back-btn {
             position: fixed;
             bottom: 20px;
-            right: 20px;
+            /* CAMBIO 4: Botón X a la izquierda */
+            left: 20px; 
             width: 50px;
             height: 50px;
             background: #6200EE;
@@ -215,8 +217,7 @@
                 <div class="dot"></div>
                 <div class="dot"></div>
             </div>
-            <div class="text">Cargando aplicación...</div>
-            <div class="version">VERSIÓN 2.6</div>
+            <div class="text">Cargando...</div>
         </div>
 
         <!-- MENÚ DE INICIO -->
@@ -225,16 +226,14 @@
             <div class="menu-title">GESTIÓN DE<br>CATENARIA</div>
             
             <button class="btn" onclick="navegar('inspeccion')">
-                <i class="material-icons" style="font-size:24px;">assignment</i>
-                INSPECCIÓN
+                📋 INSPECCIÓN
             </button>
             
             <button class="btn" onclick="navegar('registro')">
-                <i class="material-icons" style="font-size:24px;">inventory_2</i>
-                REGISTRO
+                📝 REGISTRO
             </button>
 
-            <div class="version" style="left: 40px; bottom: 40px;">Seleccione una opción</div>
+            <div class="version">VERSIÓN 2.7</div>
         </div>
 
         <!-- IFRAME -->
@@ -245,19 +244,16 @@
             sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation">
         </iframe>
 
-        <!-- BOTÓN VOLVER -->
+        <!-- BOTÓN FLOTANTE PARA VOLVER -->
         <div id="back-btn" onclick="volverMenu()">✕</div>
     </div>
-    
-    <!-- Importar iconos para que se vean bonitos en los botones a la izquierda -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <script>
         // CONFIGURACIÓN DE URLs
         const URLS = {
             inspeccion: "https://script.google.com/macros/s/AKfycbypF6AhFvVsc6fI9VFNmH29BFWzFb2_UxZruEUuNb14nonT7A8Nq50PQTqyU2pDxzI/exec",
             
-            // TU URL ACTUALIZADA
+            // LA URL DE REGISTRO QUE ME DISTE ANTES
             registro: "https://script.google.com/macros/s/AKfycbwJQZaUehW_JxmZEcJGn1r8TTYb3BoxxvXNFL24vwmy_aoLRkhT9uO-Rv5LF-WKvtkr/exec" 
         };
 
@@ -270,7 +266,7 @@
             const urlDestino = URLS[tipo];
 
             if (!urlDestino) {
-                alert("⚠️ Error: URL no configurada");
+                alert("⚠️ Error: URL no configurada para " + tipo);
                 return;
             }
 
@@ -293,6 +289,7 @@
             iframe.classList.remove('active');
             backBtn.classList.remove('visible');
             menu.classList.remove('hidden');
+            
             setTimeout(() => {
                 iframe.src = "";
                 loading.classList.remove('show');
