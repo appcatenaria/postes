@@ -44,8 +44,9 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            padding: 20px;
+            /* CAMBIO: Alineado a la izquierda */
+            align-items: flex-start; 
+            padding: 40px; /* Más espacio a los lados */
             z-index: 10;
             transition: transform 0.4s ease, opacity 0.4s ease;
         }
@@ -59,23 +60,26 @@
         .menu-logo {
             font-size: 60px;
             background: white;
-            width: 120px;
-            height: 120px;
-            border-radius: 30px;
+            width: 100px; /* Un poco más pequeño para equilibrar */
+            height: 100px;
+            border-radius: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            /* Al estar en flex-start, ya se queda a la izquierda */
         }
 
         .menu-title {
             color: white;
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 28px; /* Un poco más grande */
+            font-weight: 800;
             margin-bottom: 40px;
-            text-align: center;
+            /* CAMBIO: Texto a la izquierda */
+            text-align: left; 
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            line-height: 1.2;
         }
 
         .btn {
@@ -84,8 +88,8 @@
             border: none;
             width: 100%;
             max-width: 320px;
-            padding: 20px;
-            margin: 10px 0;
+            padding: 20px 25px; /* Más padding lateral */
+            margin: 8px 0;
             border-radius: 16px;
             font-size: 18px;
             font-weight: 700;
@@ -94,8 +98,9 @@
             transition: transform 0.2s, box-shadow 0.2s;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
+            /* CAMBIO: Contenido del botón a la izquierda */
+            justify-content: flex-start; 
+            gap: 15px;
         }
 
         .btn:active {
@@ -114,7 +119,7 @@
             left: 0;
             z-index: 5;
             transition: opacity 0.6s;
-            background: white; /* Fondo blanco para evitar transparencias raras */
+            background: white;
         }
 
         iframe.active { opacity: 1; z-index: 20; }
@@ -172,12 +177,10 @@
         .version { position: absolute; bottom: 30px; color: rgba(255,255,255,0.6); font-size: 11px; letter-spacing: 1px; }
 
         /* --- BOTON VOLVER --- */
-        /* --- BOTON VOLVER (AHORA A LA IZQUIERDA) --- */
         #back-btn {
             position: fixed;
             bottom: 20px;
-            /* CAMBIO AQUÍ: Antes era right: 20px */
-            left: 20px; 
+            right: 20px;
             width: 50px;
             height: 50px;
             background: #6200EE;
@@ -222,17 +225,19 @@
             <div class="menu-title">GESTIÓN DE<br>CATENARIA</div>
             
             <button class="btn" onclick="navegar('inspeccion')">
-                📋 INSPECCIÓN
+                <i class="material-icons" style="font-size:24px;">assignment</i>
+                INSPECCIÓN
             </button>
             
             <button class="btn" onclick="navegar('registro')">
-                📝 REGISTRO
+                <i class="material-icons" style="font-size:24px;">inventory_2</i>
+                REGISTRO
             </button>
 
-            <div class="version">Seleccione una opción</div>
+            <div class="version" style="left: 40px; bottom: 40px;">Seleccione una opción</div>
         </div>
 
-        <!-- IFRAME (Inicialmente vacío) -->
+        <!-- IFRAME -->
         <iframe 
             id="app"
             src=""
@@ -240,17 +245,19 @@
             sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation">
         </iframe>
 
-        <!-- BOTÓN FLOTANTE PARA VOLVER -->
+        <!-- BOTÓN VOLVER -->
         <div id="back-btn" onclick="volverMenu()">✕</div>
     </div>
+    
+    <!-- Importar iconos para que se vean bonitos en los botones a la izquierda -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <script>
         // CONFIGURACIÓN DE URLs
         const URLS = {
-            // URL original que me diste
             inspeccion: "https://script.google.com/macros/s/AKfycbypF6AhFvVsc6fI9VFNmH29BFWzFb2_UxZruEUuNb14nonT7A8Nq50PQTqyU2pDxzI/exec",
             
-            // ¡IMPORTANTE! COLOCA AQUÍ LA SEGUNDA URL
+            // TU URL ACTUALIZADA
             registro: "https://script.google.com/macros/s/AKfycbwJQZaUehW_JxmZEcJGn1r8TTYb3BoxxvXNFL24vwmy_aoLRkhT9uO-Rv5LF-WKvtkr/exec" 
         };
 
@@ -259,50 +266,36 @@
         const menu = document.getElementById('menu-container');
         const backBtn = document.getElementById('back-btn');
 
-        // Función para ir al iframe
         function navegar(tipo) {
             const urlDestino = URLS[tipo];
 
-            if (!urlDestino || urlDestino.includes("AQUI_TU_URL")) {
-                alert("⚠️ Error: No has configurado la URL para " + tipo);
+            if (!urlDestino) {
+                alert("⚠️ Error: URL no configurada");
                 return;
             }
 
-            // 1. Mostrar carga
             loading.classList.add('show');
-            
-            // 2. Ocultar menú
             menu.classList.add('hidden');
-
-            // 3. Asignar URL al iframe
             iframe.src = urlDestino;
         }
 
-        // Cuando el iframe termina de cargar
         iframe.onload = () => {
-            // Solo si tiene una URL cargada (evita ejecución al inicio)
             if(iframe.src && iframe.src !== window.location.href) {
                 setTimeout(() => {
                     loading.classList.remove('show');
                     iframe.classList.add('active');
-                    backBtn.classList.add('visible'); // Mostrar botón volver
-                }, 1000); // Pequeño delay para suavidad
+                    backBtn.classList.add('visible');
+                }, 1000);
             }
         };
 
-        // Función para volver al menú
         function volverMenu() {
-            // Ocultar iframe y botón volver
             iframe.classList.remove('active');
             backBtn.classList.remove('visible');
-            
-            // Mostrar menú
             menu.classList.remove('hidden');
-
-            // Limpiar iframe para ahorrar memoria
             setTimeout(() => {
                 iframe.src = "";
-                loading.classList.remove('show'); // Asegurar que loading se va
+                loading.classList.remove('show');
             }, 500);
         }
     </script>
