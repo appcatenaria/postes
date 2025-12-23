@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Inspección Catenaria</title>
+    <title>Menú Catenaria</title>
 
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon.png">
@@ -23,7 +23,7 @@
             overflow: hidden;
             position: fixed;
             background: #6200EE;
-            font-family: -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         #app-wrapper {
@@ -31,18 +31,95 @@
             height: 100vh;
             height: 100dvh;
             background: linear-gradient(135deg, #6200EE 0%, #7c4dff 50%, #9575cd 100%);
+            position: relative;
         }
 
+        /* --- MENÚ PRINCIPAL --- */
+        #menu-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 10;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+
+        #menu-container.hidden {
+            transform: scale(0.9);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .menu-logo {
+            font-size: 60px;
+            background: white;
+            width: 120px;
+            height: 120px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .menu-title {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .btn {
+            background: white;
+            color: #6200EE;
+            border: none;
+            width: 100%;
+            max-width: 320px;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* --- IFRAME --- */
         iframe {
             width: 100%;
             height: 100%;
             border: none;
             opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 5;
             transition: opacity 0.6s;
+            background: white; /* Fondo blanco para evitar transparencias raras */
         }
 
-        iframe.loaded { opacity: 1; }
+        iframe.active { opacity: 1; z-index: 20; }
 
+        /* --- LOADING SCREEN --- */
         #loading {
             position: fixed;
             top: 0;
@@ -56,28 +133,26 @@
             align-items: center;
             z-index: 9999;
             transition: opacity 0.5s;
+            pointer-events: none;
+            opacity: 0;
         }
 
-        #loading.hide { opacity: 0; pointer-events: none; }
+        #loading.show { opacity: 1; pointer-events: all; }
 
-        .logo {
-            width: 100px;
-            height: 100px;
+        .loading-logo {
+            width: 80px;
+            height: 80px;
             background: white;
-            border-radius: 24px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 50px;
-            margin-bottom: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            font-size: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
 
-        .dots {
-            display: flex;
-            gap: 10px;
-        }
-
+        .dots { display: flex; gap: 10px; }
         .dot {
             width: 10px;
             height: 10px;
@@ -85,7 +160,6 @@
             border-radius: 50%;
             animation: bounce 1.4s infinite ease-in-out;
         }
-
         .dot:nth-child(1) { animation-delay: -0.32s; }
         .dot:nth-child(2) { animation-delay: -0.16s; }
 
@@ -94,52 +168,141 @@
             40% { transform: scale(1.2); opacity: 1; }
         }
 
-        .text {
-            color: white;
-            font-size: 15px;
-            font-weight: 600;
-            margin-top: 24px;
-        }
+        .text { color: white; font-size: 15px; font-weight: 600; margin-top: 24px; }
+        .version { position: absolute; bottom: 30px; color: rgba(255,255,255,0.6); font-size: 11px; letter-spacing: 1px; }
 
-        .version {
-            position: absolute;
-            bottom: 40px;
-            color: rgba(255,255,255,0.6);
-            font-size: 11px;
-            letter-spacing: 1px;
+        /* --- BOTON VOLVER --- */
+        #back-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: #6200EE;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 100;
+            border: 2px solid white;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
         }
+        #back-btn.visible { opacity: 1; pointer-events: all; }
+        #back-btn:active { transform: scale(0.9); }
+
     </style>
 </head>
 <body>
     <div id="app-wrapper">
+        
+        <!-- PANTALLA DE CARGA -->
         <div id="loading">
-            <div class="logo">🚄</div>
+            <div class="loading-logo">🚄</div>
             <div class="dots">
                 <div class="dot"></div>
                 <div class="dot"></div>
                 <div class="dot"></div>
             </div>
             <div class="text">Cargando aplicación...</div>
-            <div class="version">VERSIÓN 2.5</div>
+            <div class="version">VERSIÓN 2.6</div>
         </div>
+
+        <!-- MENÚ DE INICIO -->
+        <div id="menu-container">
+            <div class="menu-logo">🚄</div>
+            <div class="menu-title">GESTIÓN DE<br>CATENARIA</div>
+            
+            <button class="btn" onclick="navegar('inspeccion')">
+                📋 INSPECCIÓN
+            </button>
+            
+            <button class="btn" onclick="navegar('registro')">
+                📝 REGISTRO
+            </button>
+
+            <div class="version">Seleccione una opción</div>
+        </div>
+
+        <!-- IFRAME (Inicialmente vacío) -->
         <iframe 
             id="app"
-            src="https://script.google.com/macros/s/AKfycbypF6AhFvVsc6fI9VFNmH29BFWzFb2_UxZruEUuNb14nonT7A8Nq50PQTqyU2pDxzI/exec"
+            src=""
             allow="camera; geolocation; microphone; vibrate; accelerometer; gyroscope"
             sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation">
         </iframe>
+
+        <!-- BOTÓN FLOTANTE PARA VOLVER -->
+        <div id="back-btn" onclick="volverMenu()">✕</div>
     </div>
 
     <script>
-        const app = document.getElementById('app');
-        const loading = document.getElementById('loading');
-
-        app.onload = () => {
-            setTimeout(() => {
-                loading.classList.add('hide');
-                app.classList.add('loaded');
-            }, 1200);
+        // CONFIGURACIÓN DE URLs
+        const URLS = {
+            // URL original que me diste
+            inspeccion: "https://script.google.com/macros/s/AKfycbypF6AhFvVsc6fI9VFNmH29BFWzFb2_UxZruEUuNb14nonT7A8Nq50PQTqyU2pDxzI/exec",
+            
+            // ¡IMPORTANTE! COLOCA AQUÍ LA SEGUNDA URL
+            registro: "AQUI_TU_URL_DE_REGISTRO_DE_CATENARIA" 
         };
+
+        const iframe = document.getElementById('app');
+        const loading = document.getElementById('loading');
+        const menu = document.getElementById('menu-container');
+        const backBtn = document.getElementById('back-btn');
+
+        // Función para ir al iframe
+        function navegar(tipo) {
+            const urlDestino = URLS[tipo];
+
+            if (!urlDestino || urlDestino.includes("AQUI_TU_URL")) {
+                alert("⚠️ Error: No has configurado la URL para " + tipo);
+                return;
+            }
+
+            // 1. Mostrar carga
+            loading.classList.add('show');
+            
+            // 2. Ocultar menú
+            menu.classList.add('hidden');
+
+            // 3. Asignar URL al iframe
+            iframe.src = urlDestino;
+        }
+
+        // Cuando el iframe termina de cargar
+        iframe.onload = () => {
+            // Solo si tiene una URL cargada (evita ejecución al inicio)
+            if(iframe.src && iframe.src !== window.location.href) {
+                setTimeout(() => {
+                    loading.classList.remove('show');
+                    iframe.classList.add('active');
+                    backBtn.classList.add('visible'); // Mostrar botón volver
+                }, 1000); // Pequeño delay para suavidad
+            }
+        };
+
+        // Función para volver al menú
+        function volverMenu() {
+            // Ocultar iframe y botón volver
+            iframe.classList.remove('active');
+            backBtn.classList.remove('visible');
+            
+            // Mostrar menú
+            menu.classList.remove('hidden');
+
+            // Limpiar iframe para ahorrar memoria
+            setTimeout(() => {
+                iframe.src = "";
+                loading.classList.remove('show'); // Asegurar que loading se va
+            }, 500);
+        }
     </script>
 </body>
 </html>
