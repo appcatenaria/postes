@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Catenaria">
-    <meta name="theme-color" content="#6200EE">
+    <meta name="theme-color" content="#5a3891">
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -22,7 +22,7 @@
             height: 100%;
             overflow: hidden;
             position: fixed;
-            background: #6200EE;
+            background: #5a3891; /* Color base extraído de la imagen */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
@@ -30,7 +30,12 @@
             width: 100vw;
             height: 100vh;
             height: 100dvh;
-            background: linear-gradient(135deg, #6200EE 0%, #7c4dff 50%, #9575cd 100%);
+            /* FONDO: Gradiente para legibilidad + Imagen posicionada a la derecha */
+            background: 
+                linear-gradient(90deg, rgba(91, 56, 145, 1) 0%, rgba(91, 56, 145, 0.8) 30%, rgba(91, 56, 145, 0) 100%),
+                url('background.jpg') no-repeat; /* Asegúrate de que la imagen se llame background.jpg o cambia el nombre aquí */
+            background-size: cover;
+            background-position: 40% center; /* Ajusta la imagen un poco a la derecha */
             position: relative;
         }
 
@@ -44,71 +49,78 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            /* CAMBIO 1: Todo alineado a la izquierda */
             align-items: flex-start; 
-            padding-left: 40px; /* Margen izquierdo elegante */
+            padding-left: 10%; /* Padding porcentual para mejor respuesta en pantallas anchas */
             padding-right: 40px;
             z-index: 10;
-            transition: transform 0.4s ease, opacity 0.4s ease;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
         }
 
         #menu-container.hidden {
-            transform: scale(0.9);
+            transform: translateX(-20px);
             opacity: 0;
             pointer-events: none;
         }
 
         .menu-logo {
-            font-size: 50px;
+            width: 90px;
+            height: 90px;
             background: white;
-            width: 100px;
-            height: 100px;
-            border-radius: 24px;
+            border-radius: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            /* El logo se queda a la izquierda por el flex-start del contenedor */
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        .menu-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .menu-title {
             color: white;
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 800;
-            margin-bottom: 40px;
-            /* CAMBIO 2: Texto a la izquierda */
+            margin-bottom: 45px;
             text-align: left; 
-            line-height: 1.2;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
         .btn {
             background: white;
-            color: #6200EE;
+            color: #5a3891;
             border: none;
             width: 100%;
-            max-width: 320px;
+            max-width: 280px;
             padding: 18px 24px;
-            margin: 8px 0;
-            border-radius: 16px;
-            font-size: 18px;
+            margin: 10px 0;
+            border-radius: 18px;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            /* CAMBIO 3: Contenido del botón a la izquierda */
             justify-content: flex-start; 
             gap: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .btn:active {
-            transform: scale(0.98);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            background: #f0f0f0;
+            transform: scale(0.96);
+            background: #f8f8f8;
         }
+
+        .btn-icon { font-size: 20px; }
 
         /* --- IFRAME --- */
         iframe {
@@ -123,17 +135,13 @@
             transition: opacity 0.6s;
             background: white;
         }
-
         iframe.active { opacity: 1; z-index: 20; }
 
         /* --- LOADING SCREEN --- */
         #loading {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #6200EE 0%, #7c4dff 50%, #9575cd 100%);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #5a3891;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -143,65 +151,58 @@
             pointer-events: none;
             opacity: 0;
         }
-
         #loading.show { opacity: 1; pointer-events: all; }
 
         .loading-logo {
-            width: 80px;
-            height: 80px;
+            width: 80px; height: 80px;
             background: white;
             border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
+            display: flex; align-items: center; justify-content: center;
             margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            padding: 12px;
         }
+        .loading-logo img { width: 100%; height: 100%; object-fit: contain; }
 
-        .dots { display: flex; gap: 10px; }
-        .dot { width: 10px; height: 10px; background: white; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
+        .dots { display: flex; gap: 8px; }
+        .dot { width: 8px; height: 8px; background: white; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
         .dot:nth-child(1) { animation-delay: -0.32s; }
         .dot:nth-child(2) { animation-delay: -0.16s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1.2); opacity: 1; } }
 
-        .text { color: white; font-size: 15px; font-weight: 600; margin-top: 24px; }
-        
-        /* Versión alineada a la izquierda también */
+        /* Versión */
         .version { 
             position: absolute; 
-            bottom: 40px; 
-            left: 40px; /* Alineado con el padding del contenedor */
-            color: rgba(255,255,255,0.6); 
-            font-size: 11px; 
-            letter-spacing: 1px; 
+            bottom: 30px; 
+            left: 10%; 
+            color: rgba(255,255,255,0.5); 
+            font-size: 10px; 
+            font-weight: 600;
+            letter-spacing: 1.5px; 
         }
 
-/* --- BOTON VOLVER (AHORA A LA IZQUIERDA) --- */
+        /* --- BOTON VOLVER --- */
         #back-btn {
             position: fixed;
-            bottom: 20px;
-            /* CAMBIO AQUÍ: Antes era right: 20px */
-            left: 20px; 
-            width: 50px;
-            height: 50px;
-            background: #6200EE;
-            color: white;
+            bottom: 30px;
+            left: 30px; 
+            width: 54px;
+            height: 54px;
+            background: white;
+            color: #5a3891;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            font-size: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
             z-index: 100;
-            border: 2px solid white;
             cursor: pointer;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s, transform 0.3s;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(0.5);
         }
-        #back-btn.visible { opacity: 1; pointer-events: all; }
+        #back-btn.visible { opacity: 1; pointer-events: all; transform: scale(1); }
         #back-btn:active { transform: scale(0.9); }
 
     </style>
@@ -211,26 +212,29 @@
         
         <!-- PANTALLA DE CARGA -->
         <div id="loading">
-            <div class="loading-logo">🚄</div>
+            <div class="loading-logo">
+                <img src="icon.png" alt="Logo">
+            </div>
             <div class="dots">
                 <div class="dot"></div>
-                <div class="dot"></div>
+                <div class="dot)</div>
                 <div class="dot"></div>
             </div>
-            <div class="text">Cargando...</div>
         </div>
 
         <!-- MENÚ DE INICIO -->
         <div id="menu-container">
-            <div class="menu-logo">🚄</div>
+            <div class="menu-logo">
+                <img src="icon.png" alt="Logo">
+            </div>
             <div class="menu-title">GESTIÓN DE<br>CATENARIA</div>
             
             <button class="btn" onclick="navegar('inspeccion')">
-                📋 INSPECCIÓN
+                <span class="btn-icon">📋</span> INSPECCIÓN
             </button>
             
             <button class="btn" onclick="navegar('registro')">
-                📝 REGISTRO
+                <span class="btn-icon">📝</span> REGISTRO
             </button>
 
             <div class="version">VERSIÓN 2.7</div>
@@ -249,11 +253,8 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN DE URLs
         const URLS = {
             inspeccion: "https://script.google.com/macros/s/AKfycbypF6AhFvVsc6fI9VFNmH29BFWzFb2_UxZruEUuNb14nonT7A8Nq50PQTqyU2pDxzI/exec",
-            
-            // LA URL DE REGISTRO QUE ME DISTE ANTES
             registro: "https://script.google.com/macros/s/AKfycbwJQZaUehW_JxmZEcJGn1r8TTYb3BoxxvXNFL24vwmy_aoLRkhT9uO-Rv5LF-WKvtkr/exec" 
         };
 
@@ -264,11 +265,7 @@
 
         function navegar(tipo) {
             const urlDestino = URLS[tipo];
-
-            if (!urlDestino) {
-                alert("⚠️ Error: URL no configurada para " + tipo);
-                return;
-            }
+            if (!urlDestino) return;
 
             loading.classList.add('show');
             menu.classList.add('hidden');
@@ -281,7 +278,7 @@
                     loading.classList.remove('show');
                     iframe.classList.add('active');
                     backBtn.classList.add('visible');
-                }, 1000);
+                }, 800);
             }
         };
 
@@ -292,7 +289,6 @@
             
             setTimeout(() => {
                 iframe.src = "";
-                loading.classList.remove('show');
             }, 500);
         }
     </script>
