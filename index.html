@@ -21,43 +21,39 @@
             width: 100vw;
             height: 100vh;
             height: 100dvh;
-            /* DEGRADADO DINÁMICO: Más oscuro a la izquierda para legibilidad */
+            /* AJUSTE DE DEGRADADO: Ahora la transparencia empieza mucho antes (25%) 
+               para que el trabajador se vea nítido y sin sombras */
             background: 
                 linear-gradient(to right, 
                     rgba(93, 56, 145, 1) 0%, 
-                    rgba(93, 56, 145, 0.8) 40%, 
-                    rgba(93, 56, 145, 0) 100%),
+                    rgba(93, 56, 145, 0.9) 25%, 
+                    rgba(93, 56, 145, 0) 70%),
                 url('icon.png') no-repeat;
             background-size: cover;
-            background-position: center right -100px;
+            /* Imagen más a la derecha (90%) */
+            background-position: 90% center;
             position: relative;
-            transition: background 0.3s ease;
         }
 
-        /* --- AJUSTE ESPECÍFICO PARA MÓVIL (Pantallas verticales) --- */
         @media (max-width: 600px) {
             #app-wrapper {
-                /* Empujamos la imagen más a la derecha para dejar aire al texto */
-                background-position: 70% center; 
-                /* Degradado más agresivo para asegurar lectura en pantallas pequeñas */
+                /* En móvil, forzamos que el dibujo se pegue al borde derecho */
+                background-position: right 20% center; 
                 background-image: 
-                    linear-gradient(to bottom, rgba(93, 56, 145, 0.5) 0%, rgba(93, 56, 145, 0.9) 100%),
-                    linear-gradient(to right, rgba(93, 56, 145, 1) 30%, rgba(93, 56, 145, 0) 100%),
+                    linear-gradient(to right, rgba(93, 56, 145, 1) 20%, rgba(93, 56, 145, 0.2) 80%),
                     url('icon.png');
             }
-
+            
             #menu-container {
-                padding-left: 30px !important;
+                /* Subimos el menú un 15% respecto al centro */
+                padding-top: 25vh !important; 
+                justify-content: flex-start !important;
+                padding-left: 35px !important;
             }
 
             .menu-title {
-                font-size: 28px !important; /* Texto un poco más pequeño para que no agobie */
-                margin-bottom: 30px !important;
-            }
-
-            .btn {
-                width: 240px !important; /* Botones algo más compactos */
-                padding: 16px 20px !important;
+                font-size: 30px !important;
+                margin-bottom: 35px !important;
             }
         }
 
@@ -67,17 +63,10 @@
             top: 0; left: 0; width: 100%; height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: center; /* En escritorio se mantiene centrado o ajustado */
             align-items: flex-start; 
             padding-left: 10%;
             z-index: 10;
-            transition: opacity 0.4s ease, transform 0.4s ease;
-        }
-
-        #menu-container.hidden {
-            opacity: 0;
-            transform: translateX(-20px);
-            pointer-events: none;
         }
 
         .menu-title {
@@ -87,9 +76,8 @@
             margin-bottom: 50px;
             text-align: left; 
             line-height: 1.1;
-            letter-spacing: -1px;
             text-transform: uppercase;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            text-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
 
         /* --- BOTONES --- */
@@ -97,56 +85,44 @@
             background: white;
             color: #5d3891;
             border: none;
-            width: 280px;
-            padding: 20px 25px;
-            margin: 8px 0;
-            border-radius: 14px;
+            width: 260px;
+            padding: 18px 22px;
+            margin: 10px 0;
+            border-radius: 15px;
             font-size: 15px;
             font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            transition: all 0.2s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
             display: flex;
             align-items: center;
             justify-content: space-between;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            transition: transform 0.2s;
         }
 
-        .btn:active {
-            transform: scale(0.96);
-            background: #fcfcfc;
-        }
+        .btn:active { transform: scale(0.96); }
 
         .btn-icon {
             background: #f0ebf7;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
             border-radius: 8px;
-            font-size: 16px;
         }
 
         .version { 
             position: absolute; 
-            bottom: 30px; 
-            left: 30px; 
-            color: rgba(255,255,255,0.4); 
-            font-size: 10px; 
-            font-weight: 600;
-            letter-spacing: 1px;
+            bottom: 30px; left: 35px; 
+            color: rgba(255,255,255,0.5); 
+            font-size: 10px; font-weight: 700;
         }
 
-        /* --- IFRAME & VOLVER --- */
+        /* IFRAME */
         iframe {
             width: 100%; height: 100%; border: none;
             position: absolute; top: 0; left: 0;
             opacity: 0; z-index: 5; transition: opacity 0.5s;
-            background: white;
         }
-        iframe.active { opacity: 1; z-index: 20; }
+        iframe.active { opacity: 1; z-index: 20; background: white; }
 
         #back-btn {
             position: fixed; bottom: 25px; left: 25px;
@@ -154,11 +130,10 @@
             background: #5d3891; color: white;
             border-radius: 50%; display: flex;
             align-items: center; justify-content: center;
-            font-size: 20px; z-index: 100;
-            cursor: pointer; opacity: 0; pointer-events: none;
+            z-index: 100; opacity: 0; pointer-events: none;
             box-shadow: 0 8px 15px rgba(0,0,0,0.4);
             border: 2px solid white;
-            transition: all 0.3s;
+            transition: 0.3s;
         }
         #back-btn.visible { opacity: 1; pointer-events: all; }
 
@@ -167,7 +142,6 @@
 <body>
 
     <div id="app-wrapper">
-        
         <div id="menu-container">
             <h1 class="menu-title">GESTIÓN DE<br>CATENARIA</h1>
             
@@ -186,7 +160,6 @@
 
         <iframe id="app" src=""></iframe>
         <div id="back-btn" onclick="volverMenu()">✕</div>
-
     </div>
 
     <script>
@@ -203,13 +176,13 @@
             iframe.src = URLS[tipo];
             iframe.classList.add('active');
             backBtn.classList.add('visible');
-            menu.classList.add('hidden');
+            menu.style.opacity = '0';
         }
 
         function volverMenu() {
             iframe.classList.remove('active');
             backBtn.classList.remove('visible');
-            menu.classList.remove('hidden');
+            menu.style.opacity = '1';
             setTimeout(() => { iframe.src = ""; }, 500);
         }
     </script>
