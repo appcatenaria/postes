@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Catenaria</title>
 
+    <!-- ESTO ES LO QUE HACE QUE APAREZCA EL ICONO EN EL MÓVIL -->
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Catenaria">
+    <link rel="manifest" href="manifest.json">
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -21,63 +29,41 @@
             width: 100vw;
             height: 100vh;
             height: 100dvh;
-            /* FONDO: Trabajador nítido a la derecha y degradado suave a la izquierda */
+            /* FONDO AJUSTADO: Trabajador nítido y desplazado a la derecha */
             background: 
                 linear-gradient(to right, 
                     rgba(93, 56, 145, 1) 0%, 
-                    rgba(93, 56, 145, 0.8) 30%, 
-                    rgba(93, 56, 145, 0) 80%),
+                    rgba(93, 56, 145, 0.8) 25%, 
+                    rgba(93, 56, 145, 0) 75%),
                 url('icon.png') no-repeat;
             background-size: cover;
-            background-position: right 60% center; /* Movido un pelín más a la derecha */
+            background-position: right 10% center; 
             position: relative;
         }
 
-        /* --- CONTENEDOR DE MENÚ (Subido un poco hacia arriba) --- */
+        /* --- MENÚ SUBIDO HACIA ARRIBA --- */
         #menu-container {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: flex-start; /* Alineado arriba */
-            padding-top: 15vh; /* Espacio desde arriba */
+            padding-top: 15vh; /* Ajusta este valor para subir o bajar más el bloque */
             padding-left: 10%;
             z-index: 10;
             transition: opacity 0.4s ease;
         }
 
-        /* --- LOGO RESTAURADO --- */
-        .menu-logo {
-            width: 85px;
-            height: 85px;
-            background: white;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            overflow: hidden;
-            padding: 8px;
-        }
-
-        .menu-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border-radius: 12px;
-        }
-
         .menu-title {
             color: white;
-            font-size: 42px; /* Título potente */
+            font-size: 42px;
             font-weight: 900;
             margin-bottom: 40px;
             text-align: left; 
             line-height: 1;
             letter-spacing: -1.5px;
             text-transform: uppercase;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            text-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
 
         /* --- BOTONES --- */
@@ -87,16 +73,17 @@
             border: none;
             width: 260px;
             padding: 18px 22px;
-            margin: 8px 0;
-            border-radius: 14px;
+            margin: 10px 0;
+            border-radius: 15px;
             font-size: 15px;
             font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
             display: flex;
             align-items: center;
             justify-content: space-between;
             text-transform: uppercase;
+            transition: transform 0.2s;
         }
 
         .btn:active { transform: scale(0.96); }
@@ -106,18 +93,19 @@
             width: 32px; height: 32px;
             display: flex; align-items: center; justify-content: center;
             border-radius: 8px;
+            font-size: 16px;
         }
 
         @media (max-width: 600px) {
             #app-wrapper {
-                /* Forzamos que se vea el trabajador a la derecha en móvil */
-                background-position: right -60px center; 
+                background-position: right -50px center; /* Trabajador más a la derecha en móvil */
             }
             #menu-container {
                 padding-left: 35px;
-                padding-top: 12vh;
+                padding-top: 15vh; /* Mantiene el menú arriba en móvil */
             }
-            .menu-title { font-size: 36px; }
+            .menu-title { font-size: 38px; }
+            .btn { width: 240px; }
         }
 
         .version { 
@@ -125,6 +113,7 @@
             bottom: 30px; left: 35px; 
             color: rgba(255,255,255,0.4); 
             font-size: 10px; font-weight: 700;
+            letter-spacing: 1px;
         }
 
         /* IFRAME */
@@ -137,7 +126,7 @@
 
         #back-btn {
             position: fixed; bottom: 25px; left: 25px;
-            width: 50px; height: 50px;
+            width: 52px; height: 52px;
             background: #5d3891; color: white;
             border-radius: 50%; display: flex;
             align-items: center; justify-content: center;
@@ -154,11 +143,7 @@
 
     <div id="app-wrapper">
         <div id="menu-container">
-            <!-- LOGO RESTAURADO -->
-            <div class="menu-logo">
-                <img src="icon.png" alt="Logo">
-            </div>
-
+            <!-- Título corto como pediste -->
             <h1 class="menu-title">CATENARIA</h1>
             
             <button class="btn" onclick="navegar('inspeccion')">
