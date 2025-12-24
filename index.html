@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Gestión Catenaria</title>
+    <title>Catenaria</title>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -21,63 +21,63 @@
             width: 100vw;
             height: 100vh;
             height: 100dvh;
-            /* AJUSTE DE DEGRADADO: Ahora la transparencia empieza mucho antes (25%) 
-               para que el trabajador se vea nítido y sin sombras */
+            /* FONDO: Trabajador nítido a la derecha y degradado suave a la izquierda */
             background: 
                 linear-gradient(to right, 
                     rgba(93, 56, 145, 1) 0%, 
-                    rgba(93, 56, 145, 0.9) 25%, 
-                    rgba(93, 56, 145, 0) 70%),
+                    rgba(93, 56, 145, 0.8) 30%, 
+                    rgba(93, 56, 145, 0) 80%),
                 url('icon.png') no-repeat;
             background-size: cover;
-            /* Imagen más a la derecha (90%) */
-            background-position: 90% center;
+            background-position: right 60% center; /* Movido un pelín más a la derecha */
             position: relative;
         }
 
-        @media (max-width: 600px) {
-            #app-wrapper {
-                /* En móvil, forzamos que el dibujo se pegue al borde derecho */
-                background-position: right 60% center; 
-                background-image: 
-                    linear-gradient(to right, rgba(93, 56, 145, 1) 20%, rgba(93, 56, 145, 0.2) 80%),
-                    url('icon.png');
-            }
-            
-            #menu-container {
-                /* Subimos el menú un 15% respecto al centro */
-                padding-top: 25vh !important; 
-                justify-content: flex-start !important;
-                padding-left: 35px !important;
-            }
-
-            .menu-title {
-                font-size: 30px !important;
-                margin-bottom: 35px !important;
-            }
-        }
-
-        /* --- CONTENEDOR DE MENÚ --- */
+        /* --- CONTENEDOR DE MENÚ (Subido un poco hacia arriba) --- */
         #menu-container {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* En escritorio se mantiene centrado o ajustado */
-            align-items: flex-start; 
+            justify-content: flex-start; /* Alineado arriba */
+            padding-top: 15vh; /* Espacio desde arriba */
             padding-left: 10%;
             z-index: 10;
+            transition: opacity 0.4s ease;
+        }
+
+        /* --- LOGO RESTAURADO --- */
+        .menu-logo {
+            width: 85px;
+            height: 85px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            overflow: hidden;
+            padding: 8px;
+        }
+
+        .menu-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 12px;
         }
 
         .menu-title {
             color: white;
-            font-size: 38px;
+            font-size: 42px; /* Título potente */
             font-weight: 900;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
             text-align: left; 
-            line-height: 1.1;
+            line-height: 1;
+            letter-spacing: -1.5px;
             text-transform: uppercase;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            text-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         /* --- BOTONES --- */
@@ -87,17 +87,16 @@
             border: none;
             width: 260px;
             padding: 18px 22px;
-            margin: 10px 0;
-            border-radius: 15px;
+            margin: 8px 0;
+            border-radius: 14px;
             font-size: 15px;
             font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
             display: flex;
             align-items: center;
             justify-content: space-between;
             text-transform: uppercase;
-            transition: transform 0.2s;
         }
 
         .btn:active { transform: scale(0.96); }
@@ -109,10 +108,22 @@
             border-radius: 8px;
         }
 
+        @media (max-width: 600px) {
+            #app-wrapper {
+                /* Forzamos que se vea el trabajador a la derecha en móvil */
+                background-position: right -60px center; 
+            }
+            #menu-container {
+                padding-left: 35px;
+                padding-top: 12vh;
+            }
+            .menu-title { font-size: 36px; }
+        }
+
         .version { 
             position: absolute; 
             bottom: 30px; left: 35px; 
-            color: rgba(255,255,255,0.5); 
+            color: rgba(255,255,255,0.4); 
             font-size: 10px; font-weight: 700;
         }
 
@@ -143,7 +154,12 @@
 
     <div id="app-wrapper">
         <div id="menu-container">
-            <h1 class="menu-title">GESTIÓN DE<br>CATENARIA</h1>
+            <!-- LOGO RESTAURADO -->
+            <div class="menu-logo">
+                <img src="icon.png" alt="Logo">
+            </div>
+
+            <h1 class="menu-title">CATENARIA</h1>
             
             <button class="btn" onclick="navegar('inspeccion')">
                 <span>INSPECCIÓN</span>
@@ -177,12 +193,14 @@
             iframe.classList.add('active');
             backBtn.classList.add('visible');
             menu.style.opacity = '0';
+            menu.style.pointerEvents = 'none';
         }
 
         function volverMenu() {
             iframe.classList.remove('active');
             backBtn.classList.remove('visible');
             menu.style.opacity = '1';
+            menu.style.pointerEvents = 'all';
             setTimeout(() => { iframe.src = ""; }, 500);
         }
     </script>
