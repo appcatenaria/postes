@@ -5,50 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Catenaria</title>
 
-    <!-- ESTO ES LO QUE HACE QUE APAREZCA EL ICONO EN EL MÓVIL -->
+    <!-- VINCULACIÓN CON TU MANIFEST Y ICONO PARA MÓVIL -->
+    <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Catenaria">
-    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#5d3891">
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            position: fixed;
+            width: 100%; height: 100%;
+            overflow: hidden; position: fixed;
             background-color: #5d3891; 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         #app-wrapper {
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            /* FONDO AJUSTADO: Trabajador nítido y desplazado a la derecha */
+            width: 100vw; height: 100vh; height: 100dvh;
+            /* FONDO: Trabajador nítido a la derecha, sin niebla encima */
             background: 
                 linear-gradient(to right, 
                     rgba(93, 56, 145, 1) 0%, 
-                    rgba(93, 56, 145, 0.8) 25%, 
-                    rgba(93, 56, 145, 0) 75%),
+                    rgba(93, 56, 145, 0.9) 20%, 
+                    rgba(93, 56, 145, 0) 60%),
                 url('icon.png') no-repeat;
             background-size: cover;
-            background-position: right 60% center; 
+            background-position: right 5% center; /* Un pelín más a la derecha */
             position: relative;
         }
 
-        /* --- MENÚ SUBIDO HACIA ARRIBA --- */
+        /* --- MENÚ MÁS ARRIBA --- */
         #menu-container {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* Alineado arriba */
-            padding-top: 15vh; /* Ajusta este valor para subir o bajar más el bloque */
+            justify-content: flex-start; 
+            padding-top: 12vh; /* Subido más hacia arriba */
             padding-left: 10%;
             z-index: 10;
             transition: opacity 0.4s ease;
@@ -58,7 +55,7 @@
             color: white;
             font-size: 42px;
             font-weight: 900;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
             text-align: left; 
             line-height: 1;
             letter-spacing: -1.5px;
@@ -66,7 +63,6 @@
             text-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
 
-        /* --- BOTONES --- */
         .btn {
             background: white;
             color: #5d3891;
@@ -83,7 +79,6 @@
             align-items: center;
             justify-content: space-between;
             text-transform: uppercase;
-            transition: transform 0.2s;
         }
 
         .btn:active { transform: scale(0.96); }
@@ -93,27 +88,24 @@
             width: 32px; height: 32px;
             display: flex; align-items: center; justify-content: center;
             border-radius: 8px;
-            font-size: 16px;
         }
 
         @media (max-width: 600px) {
             #app-wrapper {
-                background-position: right -50px center; /* Trabajador más a la derecha en móvil */
+                /* Empujado al extremo derecho para dejar aire al texto */
+                background-position: right -40px center; 
             }
             #menu-container {
                 padding-left: 35px;
-                padding-top: 15vh; /* Mantiene el menú arriba en móvil */
+                padding-top: 10vh; /* Aún más arriba en móvil */
             }
             .menu-title { font-size: 38px; }
-            .btn { width: 240px; }
         }
 
         .version { 
-            position: absolute; 
-            bottom: 30px; left: 35px; 
+            position: absolute; bottom: 30px; left: 35px; 
             color: rgba(255,255,255,0.4); 
             font-size: 10px; font-weight: 700;
-            letter-spacing: 1px;
         }
 
         /* IFRAME */
@@ -136,29 +128,22 @@
             transition: 0.3s;
         }
         #back-btn.visible { opacity: 1; pointer-events: all; }
-
     </style>
 </head>
 <body>
-
     <div id="app-wrapper">
         <div id="menu-container">
-            <!-- Título corto como pediste -->
             <h1 class="menu-title">CATENARIA</h1>
-            
             <button class="btn" onclick="navegar('inspeccion')">
                 <span>INSPECCIÓN</span>
                 <span class="btn-icon">📋</span>
             </button>
-            
             <button class="btn" onclick="navegar('registro')">
                 <span>REGISTRO</span>
                 <span class="btn-icon">📝</span>
             </button>
-
             <div class="version">V 2.7</div>
         </div>
-
         <iframe id="app" src=""></iframe>
         <div id="back-btn" onclick="volverMenu()">✕</div>
     </div>
